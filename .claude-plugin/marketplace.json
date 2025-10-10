@@ -1,0 +1,13 @@
+{
+  "name": "cdp-tools-marketplace",
+  "owner": {
+    "name": "@cdp-tools-marketplace"
+  },
+  "plugins": [
+    {
+      "name": "cdp-ingestion",
+      "source": "./plugins/cdp-ingestion",
+      "description": "Create the ingestion workflow pipeline"
+    }
+  ]
+}

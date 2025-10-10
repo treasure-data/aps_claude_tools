@@ -1,0 +1,42 @@
+{
+  "name": "cdp-ingestion",
+  "description": "Production-ready CDP ingestion workflow generator for Treasure Data. Enforces strict template adherence, batch file generation, and quality gates. Supports Google BigQuery, Klaviyo, OneTrust, Shopify, and more.",
+  "version": "2.0.0",
+  "author": {
+    "name": "@cdp-tools-marketplace",
+    "organization": "McCormick CDP Team"
+  },
+  "prompt": "prompt.md",
+  "agents": [
+    "agents/cdp-ingestion-expert.md"
+  ],
+  "commands": [
+    "commands/new-ingestion.md",
+    "commands/add-klaviyo.md",
+    "commands/validate-workflow.md",
+    "commands/add-object.md"
+  ],
+  "keywords": [
+    "cdp",
+    "ingestion",
+    "treasure-data",
+    "digdag",
+    "workflow",
+    "etl",
+    "data-pipeline",
+    "klaviyo",
+    "bigquery",
+    "onetrust",
+    "shopify"
+  ],
+  "categories": [
+    "data-engineering",
+    "etl",
+    "workflows"
+  ],
+  "documentation": {
+    "readme": "prompt.md",
+    "patterns": "docs/patterns/",
+    "sources": "docs/sources/"
+  }
+}
