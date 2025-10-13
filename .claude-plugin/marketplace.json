@@ -13,6 +13,11 @@
       "name": "cdp-staging",
       "source": "./plugins/cdp-staging",
       "description": "Transform raw data to staging format with data quality, PII handling, and validation"
+    },
+    {
+      "name": "cdp-unification",
+      "source": "./plugins/cdp-unification",
+      "description": "Unify and consolidate data across multiple sources"
     }
   ]
 }
