@@ -1,5 +1,5 @@
 ---
-name: validate-transformation
+name: transform-validation
 description: Validate staging transformation files against CLAUDE.md compliance and quality gates
 ---
 

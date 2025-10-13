@@ -1,5 +1,5 @@
 ---
-name: validate-workflow
+name: ingest-validate-wf
 description: Validate Digdag workflow and configuration files against production quality gates
 ---
 

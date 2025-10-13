@@ -1,5 +1,5 @@
 ---
-name: new-ingestion
+name: ingest-new
 description: Create a complete ingestion workflow for a new data source
 ---
 

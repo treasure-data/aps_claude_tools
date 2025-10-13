@@ -1,5 +1,5 @@
 ---
-name: add-klaviyo
+name: ingest-add-klaviyo
 description: Generate complete Klaviyo ingestion workflow with all data sources using exact templates
 ---
 

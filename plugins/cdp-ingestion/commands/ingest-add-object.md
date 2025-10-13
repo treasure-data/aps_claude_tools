@@ -1,5 +1,5 @@
 ---
-name: add-object
+name: ingest-add-object
 description: Add a new object/table to an existing data source workflow
 ---
 
