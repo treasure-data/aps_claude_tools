@@ -1,0 +1,41 @@
+{
+  "name": "cdp-staging",
+  "description": "Production-ready CDP staging transformation generator for Treasure Data. Supports Presto/Trino and Hive SQL engines with comprehensive data quality, PII handling, JSON extraction, and deduplication.",
+  "version": "1.0.0",
+  "author": {
+    "name": "@cdp-tools-marketplace",
+    "organization": "McCormick CDP Team"
+  },
+  "prompt": "prompt.md",
+  "agents": [
+    "agents/staging-transformer-presto.md",
+    "agents/staging-transformer-hive.md"
+  ],
+  "commands": [
+    "commands/transform-table.md",
+    "commands/transform-batch.md",
+    "commands/validate-transformation.md"
+  ],
+  "keywords": [
+    "cdp",
+    "staging",
+    "transformation",
+    "treasure-data",
+    "presto",
+    "trino",
+    "hive",
+    "data-quality",
+    "pii",
+    "json-extraction",
+    "deduplication",
+    "data-pipeline"
+  ],
+  "categories": [
+    "data-engineering",
+    "etl",
+    "data-quality"
+  ],
+  "documentation": {
+    "readme": "prompt.md"
+  }
+}

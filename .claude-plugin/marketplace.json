@@ -8,6 +8,11 @@
       "name": "cdp-ingestion",
       "source": "./plugins/cdp-ingestion",
       "description": "Create the ingestion workflow pipeline"
+    },
+    {
+      "name": "cdp-staging",
+      "source": "./plugins/cdp-staging",
+      "description": "Transform raw data to staging format with data quality, PII handling, and validation"
     }
   ]
 }
