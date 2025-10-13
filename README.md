@@ -76,19 +76,7 @@ aps_claude_tools/
 │   │       ├── patterns/
 │   │       └── sources/
 │   │
-│   ├── cdp-staging/                     # Phase 2: Data Transformation
-│   │   ├── plugin.json
-│   │   ├── prompt.md
-│   │   ├── agents/
-│   │   │   ├── staging-transformer-presto.md
-│   │   │   └── staging-transformer-hive.md
-│   │   ├── commands/
-│   │   │   ├── transform-table.md
-│   │   │   ├── transform-batch.md
-│   │   │   └── transform-validation.md
-│   │   └── docs/
-│   │
-│   ├── cdp-histunion/                   # Phase 3: Data Consolidation
+│   ├── cdp-histunion/                   # Phase 2: Data Consolidation
 │   │   ├── plugin.json
 │   │   ├── prompt.md
 │   │   ├── agents/
@@ -99,6 +87,18 @@ aps_claude_tools/
 │   │   │   └── histunion-validate.md
 │   │   └── docs/
 │   │       └── examples.md
+│   │
+│   ├── cdp-staging/                     # Phase 3: Data Transformation
+│   │   ├── plugin.json
+│   │   ├── prompt.md
+│   │   ├── agents/
+│   │   │   ├── staging-transformer-presto.md
+│   │   │   └── staging-transformer-hive.md
+│   │   ├── commands/
+│   │   │   ├── transform-table.md
+│   │   │   ├── transform-batch.md
+│   │   │   └── transform-validation.md
+│   │   └── docs/
 │   │
 │   └── cdp-unification/                 # Phase 4: Identity Resolution
 │       ├── plugin.json
@@ -140,28 +140,7 @@ aps_claude_tools/
 
 ---
 
-### 2. CDP Staging (`cdp-staging`)
-
-**Purpose**: Transform raw data into staging layer with data quality, standardization, and PII handling.
-
-**Key Features**:
-- Schema-driven transformation (uses MCP to get exact schemas)
-- Comprehensive data cleansing and standardization
-- PII masking and handling
-- JSON extraction and flattening
-- Deduplication strategies
-- Support for both Presto and Hive SQL engines
-
-**Slash Commands**:
-- `/cdp-staging:transform-table` - Transform single table to staging format
-- `/cdp-staging:transform-batch` - Batch transform multiple tables
-- `/cdp-staging:transform-validation` - Validate staging SQL against quality gates
-
-**Output**: Presto/Hive SQL transformation files, Digdag workflows
-
----
-
-### 3. CDP Hist-Union (`cdp-histunion`)
+### 2. CDP Hist-Union (`cdp-histunion`)
 
 **Purpose**: Combine historical and incremental tables into unified tables with watermark-based incremental loading.
 
@@ -179,6 +158,27 @@ aps_claude_tools/
 - `/cdp-histunion:histunion-validate` - Validate workflows and SQL
 
 **Output**: SQL files with UNION ALL logic, Digdag workflows with parallel execution
+
+---
+
+### 3. CDP Staging (`cdp-staging`)
+
+**Purpose**: Transform histunion data into staging layer with data quality, standardization, and PII handling.
+
+**Key Features**:
+- Schema-driven transformation (uses MCP to get exact schemas)
+- Comprehensive data cleansing and standardization
+- PII masking and handling
+- JSON extraction and flattening
+- Deduplication strategies
+- Support for both Presto and Hive SQL engines
+
+**Slash Commands**:
+- `/cdp-staging:transform-table` - Transform single table to staging format
+- `/cdp-staging:transform-batch` - Batch transform multiple tables
+- `/cdp-staging:transform-validation` - Validate staging SQL against quality gates
+
+**Output**: Presto/Hive SQL transformation files, Digdag workflows
 
 ---
 
