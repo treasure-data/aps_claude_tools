@@ -15,6 +15,11 @@
       "description": "Transform raw data to staging format with data quality, PII handling, and validation"
     },
     {
+      "name": "cdp-histunion",
+      "source": "./plugins/cdp-histunion",
+      "description": "Combine historical and incremental table data with schema validation and watermark tracking"
+    },
+    {
       "name": "cdp-unification",
       "source": "./plugins/cdp-unification",
       "description": "Unify and consolidate data across multiple sources"

@@ -1,0 +1,38 @@
+{
+  "name": "cdp-histunion",
+  "description": "Production-ready CDP hist-union workflow generator for combining historical and incremental table data in Treasure Data. Enforces strict template adherence and quality gates.",
+  "version": "1.0.0",
+  "author": {
+    "name": "@cdp-tools-marketplace",
+    "organization": "McCormick CDP Team"
+  },
+  "prompt": "prompt.md",
+  "agents": [
+    "agents/cdp-histunion-expert.md"
+  ],
+  "commands": [
+    "commands/histunion-create.md",
+    "commands/histunion-batch.md",
+    "commands/histunion-validate.md"
+  ],
+  "keywords": [
+    "cdp",
+    "hist-union",
+    "historical",
+    "incremental",
+    "treasure-data",
+    "digdag",
+    "workflow",
+    "data-pipeline",
+    "watermark"
+  ],
+  "categories": [
+    "data-engineering",
+    "etl",
+    "workflows"
+  ],
+  "documentation": {
+    "readme": "prompt.md",
+    "examples": "docs/examples.md"
+  }
+}
