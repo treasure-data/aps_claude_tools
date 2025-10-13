@@ -11,10 +11,10 @@
     "agents/cdp-ingestion-expert.md"
   ],
   "commands": [
-    "commands/new-ingestion.md",
-    "commands/add-klaviyo.md",
-    "commands/validate-workflow.md",
-    "commands/add-object.md"
+    "commands/ingest-new.md",
+    "commands/ingest-add-klaviyo.md",
+    "commands/ingest-validate-wf.md",
+    "commands/ingest-add-object.md"
   ],
   "keywords": [
     "cdp",

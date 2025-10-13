@@ -14,7 +14,7 @@
   "commands": [
     "commands/transform-table.md",
     "commands/transform-batch.md",
-    "commands/validate-transformation.md"
+    "commands/transform-validation.md"
   ],
   "keywords": [
     "cdp",
