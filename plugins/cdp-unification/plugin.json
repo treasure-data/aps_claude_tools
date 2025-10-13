@@ -1,0 +1,40 @@
+{
+  "name": "cdp-unification",
+  "description": "ID Unification Copilot agent for Treasure Data CDP. Interactive guidance to generate ID unification workflows with key extraction, prep table creation, unification configuration, and staging enrichment.",
+  "version": "1.0.0",
+  "author": {
+    "name": "@cdp-tools-marketplace",
+    "organization": "McCormick CDP Team"
+  },
+  "prompt": "prompt.md",
+  "agents": [
+    "agents/unif-keys-extractor.md",
+    "agents/dynamic-prep-creation.md",
+    "agents/id-unification-creator.md",
+    "agents/unification-staging-enricher.md"
+  ],
+  "commands": [
+    "commands/unify-setup.md",
+    "commands/unify-extract-keys.md",
+    "commands/unify-create-prep.md",
+    "commands/unify-create-config.md"
+  ],
+  "keywords": [
+    "cdp",
+    "unification",
+    "treasure-data",
+    "id-resolution",
+    "identity",
+    "persistent-id",
+    "canonical-id",
+    "data-pipeline"
+  ],
+  "categories": [
+    "data-engineering",
+    "identity-resolution",
+    "workflows"
+  ],
+  "documentation": {
+    "readme": "prompt.md"
+  }
+}
