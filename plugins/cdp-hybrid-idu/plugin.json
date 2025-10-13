@@ -1,0 +1,49 @@
+{
+  "name": "cdp-hybrid-idu",
+  "description": "Multi-platform ID Unification for Snowflake and Databricks. Generate and execute YAML-driven identity unification workflows with convergence detection, cryptographic hashing, and master table generation across hybrid cloud platforms.",
+  "version": "1.0.0",
+  "author": {
+    "name": "@cdp-tools-marketplace",
+    "organization": "McCormick CDP Team"
+  },
+  "prompt": "prompt.md",
+  "agents": [
+    "agents/yaml-configuration-builder.md",
+    "agents/databricks-sql-generator.md",
+    "agents/snowflake-sql-generator.md",
+    "agents/databricks-workflow-executor.md",
+    "agents/snowflake-workflow-executor.md"
+  ],
+  "commands": [
+    "commands/hybrid-setup.md",
+    "commands/hybrid-generate-databricks.md",
+    "commands/hybrid-generate-snowflake.md",
+    "commands/hybrid-execute-databricks.md",
+    "commands/hybrid-execute-snowflake.md",
+    "commands/hybrid-validate.md"
+  ],
+  "keywords": [
+    "cdp",
+    "hybrid",
+    "unification",
+    "databricks",
+    "snowflake",
+    "id-resolution",
+    "identity",
+    "delta-lake",
+    "multi-cloud",
+    "yaml-driven",
+    "master-tables",
+    "convergence",
+    "cryptographic-hashing"
+  ],
+  "categories": [
+    "data-engineering",
+    "identity-resolution",
+    "multi-cloud",
+    "workflows"
+  ],
+  "documentation": {
+    "readme": "prompt.md"
+  }
+}
