@@ -45,14 +45,21 @@ The marketplace follows a modular architecture where each plugin handles a speci
         │                           │                           │
         └───────────────────────────┼───────────────────────────┘
                                     ▼
-                          ┌──────────────────┐
-                          │ cdp-unification  │
-                          │                  │
-                          │ Identity Graph   │
-                          │ • ID Resolution  │
-                          │ • Entity Merge   │
-                          │ • Master Records │
-                          └──────────────────┘
+                 ┌──────────────────────────────────────┐
+                 │       Identity Unification           │
+                 └──────────────────────────────────────┘
+                           │                 │
+              ┌────────────┴────────┬────────┴──────────┐
+              ▼                     ▼                    ▼
+    ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
+    │ cdp-unification  │  │ cdp-hybrid-idu   │  │ cdp-hybrid-idu   │
+    │                  │  │                  │  │                  │
+    │ Treasure Data    │  │   Snowflake      │  │   Databricks     │
+    │ • ID Resolution  │  │ • YAML Config    │  │ • YAML Config    │
+    │ • Entity Merge   │  │ • IDU SQL Gen    │  │ • IDU SQL Gen    │
+    │ • Master Records │  │ • IDU Execution  │  │ • IDU Execution  │
+    │ • TD Workflow    │  │                  │  │                  │
+    └──────────────────┘  └──────────────────┘  └──────────────────┘
 ```
 
 ### Plugin Directory Structure
@@ -100,16 +107,41 @@ aps_claude_tools/
 │   │   │   └── transform-validation.md
 │   │   └── docs/
 │   │
-│   └── cdp-unification/                 # Phase 4: Identity Resolution
+│   ├── cdp-unification/                 # Phase 4a: Identity Resolution (TD)
+│   │   ├── plugin.json
+│   │   ├── prompt.md
+│   │   ├── agents/
+│   │   │   └── cdp-unification-expert.md
+│   │   ├── commands/
+│   │   │   ├── unify-setup.md
+│   │   │   ├── unify-extract-keys.md
+│   │   │   ├── unify-create-prep.md
+│   │   │   └── unify-create-config.md
+│   │   └── docs/
+│   │
+│   └── cdp-hybrid-idu/                  # Phase 4b: Hybrid ID Unification
 │       ├── plugin.json
 │       ├── prompt.md
 │       ├── agents/
-│       │   └── cdp-unification-expert.md
+│       │   ├── yaml-configuration-builder.md
+│       │   ├── snowflake-sql-generator.md
+│       │   ├── snowflake-workflow-executor.md
+│       │   ├── databricks-sql-generator.md
+│       │   └── databricks-workflow-executor.md
 │       ├── commands/
-│       │   ├── unify-setup.md
-│       │   ├── unify-extract-keys.md
-│       │   ├── unify-create-prep.md
-│       │   └── unify-create-config.md
+│       │   ├── hybrid-setup.md
+│       │   ├── hybrid-validate.md
+│       │   ├── hybrid-generate-snowflake.md
+│       │   ├── hybrid-execute-snowflake.md
+│       │   ├── hybrid-generate-databricks.md
+│       │   └── hybrid-execute-databricks.md
+│       ├── scripts/
+│       │   ├── snowflake/
+│       │   │   ├── yaml_unification_to_snowflake.py
+│       │   │   └── snowflake_sql_executor.py
+│       │   └── databricks/
+│       │       ├── yaml_unification_to_databricks.py
+│       │       └── databricks_sql_executor.py
 │       └── docs/
 │
 └── README.md                            # This file
@@ -184,7 +216,7 @@ aps_claude_tools/
 
 ### 4. CDP Unification (`cdp-unification`)
 
-**Purpose**: Implement customer identity resolution and unification to create golden records.
+**Purpose**: Implement customer identity resolution and unification to create golden records in Treasure Data.
 
 **Key Features**:
 - Live table analysis via MCP (Treasure Data API)
@@ -200,6 +232,73 @@ aps_claude_tools/
 - `/cdp-unification:unify-create-config` - Generate unification config
 
 **Output**: Prep table SQL files, `unify.yml` config, `id_unification.dig` workflow
+
+---
+
+### 5. CDP Hybrid IDU (`cdp-hybrid-idu`)
+
+**Purpose**: Cross-platform identity unification for Snowflake and Databricks using YAML-driven configuration and intelligent convergence detection.
+
+**Key Features**:
+- **Platform Support**: Snowflake and Databricks Delta Lake
+- **YAML Configuration**: Single `unify.yml` drives SQL generation for both platforms
+- **Intelligent Convergence**: Automatic loop detection stops when ID graph stabilizes
+- **Native SQL**: Platform-specific optimizations (Snowflake VARIANT, Databricks Delta)
+- **Real-time Execution**: Monitor workflow progress with convergence metrics
+- **Key Validation**: Regex patterns and invalid text filtering
+- **Master Tables**: Priority-based attribute selection with array support
+- **Metadata Tracking**: Complete lineage and column mapping
+
+**Platform-Specific Features**:
+
+**Snowflake**:
+- `ARRAY_CONSTRUCT()`, `LATERAL FLATTEN()`, `ARRAY_AGG()`
+- `CLUSTER BY` for performance optimization
+- `VARIANT` support for flexible data structures
+- Native Snowflake connector authentication (password, SSO, key-pair)
+
+**Databricks**:
+- Delta Lake table format with ACID transactions
+- `COLLECT_LIST()`, `EXPLODE()`, array operations
+- Spark SQL optimizations
+- Unity Catalog integration
+
+**Slash Commands**:
+- `/cdp-hybrid-idu:hybrid-setup` - End-to-end setup with YAML creation
+- `/cdp-hybrid-idu:hybrid-validate` - Validate YAML configuration
+- `/cdp-hybrid-idu:hybrid-generate-snowflake` - Generate Snowflake SQL from YAML
+- `/cdp-hybrid-idu:hybrid-execute-snowflake` - Execute Snowflake workflow
+- `/cdp-hybrid-idu:hybrid-generate-databricks` - Generate Databricks SQL from YAML
+- `/cdp-hybrid-idu:hybrid-execute-databricks` - Execute Databricks workflow
+
+**Input**: `unify.yml` with keys, tables, canonical_ids, master_tables
+
+**Output**:
+- **SQL Files**: 20+ files (graph creation, loop iterations, canonicalization, enrichment, master tables, metadata)
+- **Execution Reports**: Convergence metrics, row counts, timing
+- **Tables Created**: ID graphs, lookup tables, enriched tables, master tables
+
+**Convergence Algorithm**:
+```
+Iteration 1: 14,573 records → 1,565 merged → Continue
+Iteration 2: 13,035 records → 15 merged → Continue
+Iteration 3: 13,034 records → 1 merged → Continue
+Iteration 4: 13,034 records → 0 merged → CONVERGED (Stop)
+```
+
+**Example Workflow**:
+```bash
+# 1. Generate Snowflake SQL from YAML
+/cdp-hybrid-idu:hybrid-generate-snowflake
+# Input: unify.yml, database: INDRESH_TEST, schema: PUBLIC
+
+# 2. Execute with convergence detection
+/cdp-hybrid-idu:hybrid-execute-snowflake
+# Result: 13,033 canonical IDs in 4 iterations (60% faster than max 10)
+
+# 3. Verify results on Snowflake.
+SELECT * FROM INDRESH_TEST.PUBLIC.td_id_lookup LIMIT 10;
+```
 
 ---
 
@@ -289,6 +388,7 @@ aps_claude_tools/
    /plugin install cdp-staging
    /plugin install cdp-histunion
    /plugin install cdp-unification
+   /plugin install cdp-hybrid-idu
    ```
 
 3. **Restart Claude Code** to load plugins
@@ -345,6 +445,8 @@ aps_claude_tools/
 
 #### Step 4: Unify Customer Identities
 
+**Option A: Treasure Data (native)**
+
 ```bash
 # Run complete ID unification setup
 /cdp-unification:unify-setup
@@ -358,6 +460,34 @@ aps_claude_tools/
 **Input**: Database, tables with customer data
 **Output**: Prep tables, `unify.yml`, `id_unification.dig`
 **Result**: Unified customer records in `mck_master.unified_customers`
+
+**Option B: Snowflake (hybrid)**
+
+```bash
+# Generate Snowflake SQL from YAML config
+/cdp-hybrid-idu:hybrid-generate-snowflake
+
+# Execute with convergence detection
+/cdp-hybrid-idu:hybrid-execute-snowflake
+```
+
+**Input**: `unify.yml`, Snowflake connection details
+**Output**: 20+ SQL files, execution report with convergence metrics
+**Result**: Canonical IDs in `td_id_lookup`, enriched tables, master table
+
+**Option C: Databricks (hybrid)**
+
+```bash
+# Generate Databricks SQL from YAML config
+/cdp-hybrid-idu:hybrid-generate-databricks
+
+# Execute with convergence detection
+/cdp-hybrid-idu:hybrid-execute-databricks
+```
+
+**Input**: `unify.yml`, Databricks connection details
+**Output**: 20+ SQL files, execution report with convergence metrics
+**Result**: Canonical IDs in Delta Lake tables with master records
 
 ---
 
@@ -433,13 +563,30 @@ Code generated by these plugins:
 
 ## Technology Stack
 
-- **Platform**: Treasure Data (TD)
-- **Workflow Engine**: Digdag
-- **Query Engines**: Presto, Hive
+- **Platforms**:
+  - Treasure Data (TD)
+  - Snowflake
+  - Databricks
+- **Workflow Engines**:
+  - Digdag (TD)
+  - Snowflake Tasks
+  - Databricks Jobs
+- **Query Engines**:
+  - Presto (TD)
+  - Hive (TD)
+  - Snowflake SQL
+  - Spark SQL (Databricks)
+- **Storage Formats**:
+  - TD Native (Presto/Hive)
+  - Snowflake Tables with VARIANT
+  - Delta Lake (Databricks)
 - **AI Framework**: Claude Code with MCP
 - **Version Control**: Git
 - **Configuration**: YAML, JSON
-- **Query Language**: SQL (Presto/Hive dialects)
+- **Authentication**:
+  - TD API Keys
+  - Snowflake (Password, SSO, Key-Pair)
+  - Databricks (Token, OAuth)
 
 ---
 
@@ -460,7 +607,7 @@ Code generated by these plugins:
      "version": "1.0.0",
      "author": {
        "name": "@cdp-tools-marketplace",
-       "organization": "McCormick CDP Team"
+       "organization": "APS CDP Team"
      },
      "prompt": "prompt.md",
      "agents": ["agents/my-expert.md"],
@@ -543,6 +690,7 @@ Code generated by these plugins:
 
 ## Version History
 
+- **v1.5.0** (2025-10-13): Added `cdp-hybrid-idu` plugin for Snowflake and Databricks
 - **v1.4.0** (2024-10-13): Added `cdp-histunion` plugin
 - **v1.3.0** (2024-10-13): Added `cdp-unification` plugin
 - **v1.2.0** (2024-10-13): Added `cdp-staging` plugin with Hive support
@@ -553,7 +701,7 @@ Code generated by these plugins:
 
 ## License
 
-Proprietary - McCormick CDP Team / APS
+Proprietary - APS CDP Team / APS
 
 ---
 
@@ -561,7 +709,7 @@ Proprietary - McCormick CDP Team / APS
 
 For questions, issues, or feature requests:
 - **Team**: APS CDP Implementation Team
-- **Organization**: McCormick & Company
+- **Organization**: Treasure Data (APS)
 - **Marketplace**: `@cdp-tools-marketplace`
 
 ---

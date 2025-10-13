@@ -114,7 +114,7 @@ Before delivering, I will verify:
 
 ### 1. Upload Credentials
 ```bash
-cd /Users/indreshkumar/Desktop/work/projects/McCormick/dev/workflow_projects/ingestion_main/ingestion
+cd /Users/indreshkumar/Desktop/work/projects/CLIENT/dev/workflow_projects/ingestion_main/ingestion
 td wf secrets --project ingestion --set @credentials_ingestion.json
 ```
 
