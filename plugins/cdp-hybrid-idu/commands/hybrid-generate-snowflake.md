@@ -35,13 +35,6 @@ Generate production-ready Snowflake SQL workflow from your `unify.yml` configura
 ### Step 2: SQL Generation
 I'll call the **snowflake-sql-generator agent** to:
 - Execute `yaml_unification_to_snowflake.py` Python script
-- Apply Snowflake-specific SQL conversions:
-  - `SIZE` → `ARRAY_SIZE`
-  - `ARRAY` → `ARRAY_CONSTRUCT`
-  - `STRUCT` → `OBJECT_CONSTRUCT`
-  - `COLLECT_LIST` → `ARRAY_AGG`
-  - `BOOL_OR` → `BOOLOR_AGG`
-  - `LATERAL VIEW EXPLODE` → `LATERAL FLATTEN`
 - Generate Snowflake table definitions with clustering
 - Create convergence detection logic
 - Build cryptographic hashing for canonical IDs

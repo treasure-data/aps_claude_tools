@@ -2,7 +2,31 @@
   "permissions": {
     "allow": [
       "Bash(mkdir:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Read(//Users/indreshkumar/Desktop/work/projects/CLIENT/dev/workflow_projects/staging_main/**)",
+      "Read(//Users/indreshkumar/Desktop/work/projects/CLIENT/dev/workflow_projects/staging_main/.claude/agents/**)",
+      "Bash(tree:*)",
+      "Bash(awk:*)",
+      "Bash(cat:*)",
+      "Bash(for file in plugins/*/commands/*.md)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(head:*)",
+      "Bash(done)",
+      "Read(//Users/indreshkumar/Desktop/work/projects/CLIENT/dev/workflow_projects/unification_main/**)",
+      "Read(//Users/indreshkumar/Desktop/work/projects/CLIENT/dev/workflow_projects/unification_main/.claude/agents/**)",
+      "Bash(for:*)",
+      "Bash(do test -f \"$cmd\")",
+      "Bash(echo \"✓ $cmd\")",
+      "Bash(echo \"✗ $cmd MISSING\")",
+      "Bash(do test:*)",
+      "Bash(echo:*)",
+      "Bash(python3:*)",
+      "Read(//Users/indreshkumar/Desktop/work/projects/CLIENT/dev/workflow_projects/hist_union_main/**)",
+      "mcp__mcc_treasuredata__use_database",
+      "mcp__mcc_treasuredata__describe_table",
+      "mcp__mcc_treasuredata__query",
+      "Read(//Users/indreshkumar/Desktop/work/projects/TD_PS_GitHub/td-cdp-hybrid/**)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

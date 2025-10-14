@@ -23,7 +23,7 @@ Execute your generated Snowflake SQL workflow with intelligent convergence detec
 
 ### Authentication
 **Option 1: Password**
-- Can be provided as argument or via environment variable `SNOWFLAKE_PASSWORD`
+- Can be provided as argument or via environment variable `SNOWFLAKE_PASSWORD` via environment file (.env) `SNOWFLAKE_PASSWORD`
 - Will prompt if not provided
 
 **Option 2: SSO (externalbrowser)**
@@ -334,7 +334,8 @@ During execution, you can monitor:
 
 ---
 
-## Post-Execution Validation
+## Post-Execution Validation 
+**DO NOT RUN THESE VALIDATION. JUST PRESENT TO USER TO RUN ON SNOWFLAKE**
 
 ### Check Coverage
 ```sql

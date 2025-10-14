@@ -345,6 +345,7 @@ During execution, you can monitor:
 ---
 
 ## Post-Execution Validation
+**DO NOT RUN THESE VALIDATION. JUST PRESENT TO USER TO RUN ON DATABRICKS**
 
 ### Check Coverage
 ```sql
