@@ -9,6 +9,7 @@
   "prompt": "prompt.md",
   "agents": [
     "agents/yaml-configuration-builder.md",
+    "agents/hybrid-unif-keys-extractor.md",
     "agents/databricks-sql-generator.md",
     "agents/snowflake-sql-generator.md",
     "agents/databricks-workflow-executor.md",
@@ -16,6 +17,7 @@
   ],
   "commands": [
     "commands/hybrid-setup.md",
+    "commands/unif-config-creator.md",
     "commands/hybrid-generate-databricks.md",
     "commands/hybrid-generate-snowflake.md",
     "commands/hybrid-execute-databricks.md",

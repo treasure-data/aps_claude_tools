@@ -1,3 +1,7 @@
 .claude/settings.local.json
 .env
 unify.yml
+unify_old_bkp.yml
+.claude/conventions/planning-documentation.md
+plugins/cdp-hybrid-idu/PLAN-unif-config-creator.md
+plugins/cdp-orchestrator/PLAN.md

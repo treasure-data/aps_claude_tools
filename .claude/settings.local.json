@@ -26,7 +26,8 @@
       "mcp__mcc_treasuredata__describe_table",
       "mcp__mcc_treasuredata__query",
       "Read(//Users/indreshkumar/Desktop/work/projects/TD_PS_GitHub/td-cdp-hybrid/**)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "mcp__snowflake__execute_query"
     ],
     "deny": [],
     "ask": []
