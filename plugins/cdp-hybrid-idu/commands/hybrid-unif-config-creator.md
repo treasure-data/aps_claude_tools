@@ -1,5 +1,5 @@
 ---
-name: unif-config-creator
+name: hybrid-unif-config-creator
 description: Auto-generate unify.yml configuration for Snowflake/Databricks by extracting user identifiers from actual tables using strict PII detection
 ---
 

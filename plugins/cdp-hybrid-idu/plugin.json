@@ -17,7 +17,7 @@
   ],
   "commands": [
     "commands/hybrid-setup.md",
-    "commands/unif-config-creator.md",
+    "commands/hybrid-unif-config-creator.md",
     "commands/hybrid-generate-databricks.md",
     "commands/hybrid-generate-snowflake.md",
     "commands/hybrid-execute-databricks.md",
