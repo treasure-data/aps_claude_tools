@@ -277,7 +277,7 @@ def generate_extract_sql_snowflake(
     src_schema: str,
 ) -> str:
     """Generate extract SQL block for a single table (only merge keys) - Snowflake version"""
-    key_name_to_ns = {k["name"]: i + 1 for i, k in enumerate(keys_cfg)}
+    key_name_to_ns = {key: i + 1 for i, key in enumerate(merge_keys)}
     key_cfg_map = {k["name"]: k for k in keys_cfg}
 
     # Build case expressions for only merge keys
