@@ -27,7 +27,9 @@
       "mcp__mcc_treasuredata__query",
       "Read(//Users/indreshkumar/Desktop/work/projects/TD_PS_GitHub/td-cdp-hybrid/**)",
       "Bash(find:*)",
-      "mcp__snowflake__execute_query"
+      "mcp__snowflake__execute_query",
+      "Bash(while read file)",
+      "Bash(do sed -i '' '/incremental_merge_iterations/d' \"$file\" echo \"✓ Removed from: $file\" done)"
     ],
     "deny": [],
     "ask": []

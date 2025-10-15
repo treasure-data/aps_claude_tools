@@ -85,13 +85,11 @@ persistent_ids:
   - name: {persistent_id_name}
     merge_by_keys: [email, td_client_id, phone, td_global_id] # ALL available keys
     merge_iterations: 15
-    incremental_merge_iterations: 10
 
 canonical_ids:
   - name: {canonical_id_name}
     merge_by_keys: [email, td_client_id, phone, td_global_id] # ALL available keys
     merge_iterations: 15
-    incremental_merge_iterations: 10
 ```
 
 ### unification/id_unification.dig Template Structure

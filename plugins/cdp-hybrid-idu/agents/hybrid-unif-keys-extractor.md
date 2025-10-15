@@ -496,8 +496,7 @@ canonical_ids:
   - name: td_id
     merge_by_keys: [email, customer_id, phone_number]
     # key_priorities: [3, 1, 2]  # email=3, customer_id=1, phone_number=2 (different priority order!)
-    merge_iterations: 10
-    incremental_merge_iterations: 5
+    merge_iterations: 15
 #####################################################
 ##
 ##Declare Similar Attributes and standardize into a single column

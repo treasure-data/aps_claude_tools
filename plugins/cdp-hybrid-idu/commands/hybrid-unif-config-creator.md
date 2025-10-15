@@ -151,7 +151,7 @@ tables:
 canonical_ids:
   - name: {your_canonical_id_name}
     merge_by_keys: [email, customer_id, phone_number]
-    merge_iterations: 10
+    merge_iterations: 15
 ```
 *Based on extracted keys and your configuration*
 
@@ -354,7 +354,6 @@ canonical_ids:
   - name: {canonical_id_name}
     merge_by_keys: [{key1}, {key2}, ...]
     merge_iterations: {number}
-    incremental_merge_iterations: {number}
 
 #####################################################
 ##

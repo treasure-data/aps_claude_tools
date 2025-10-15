@@ -1,5 +1,5 @@
 ---
-name: hybrid-validate
+name: hybrid-unif-config-validate
 description: Validate YAML configuration for hybrid ID unification before SQL generation
 ---
 
@@ -89,7 +89,7 @@ Generate comprehensive report with:
 
 ### Basic Usage
 ```
-/cdp-hybrid-idu:hybrid-validate
+/cdp-hybrid-idu:hybrid-unif-config-validate
 
 I'll prompt you for:
 - YAML file path
@@ -127,7 +127,7 @@ tables:
 canonical_ids:
   - name: unified_id
     merge_by_keys: [email, customer_id]
-    merge_iterations: 5
+    merge_iterations: 15
 
 master_tables:
   - name: customer_master
@@ -161,7 +161,7 @@ Tables Section (2 tables):
 Canonical IDs Section:
   ✅ Name: unified_id
   ✅ Merge keys: email, customer_id (both exist)
-  ✅ Iterations: 5 (recommended range: 3-10)
+  ✅ Iterations: 15 (recommended range: 10-20)
 
 Master Tables Section (1 master table):
   ✅ customer_master: References unified_id
@@ -247,7 +247,7 @@ Summary:
 
 ### Value Errors
 **Error**: `merge_iterations must be a positive integer, got: 'auto'`
-**Solution**: Either remove merge_iterations (auto-calculate) or specify integer (e.g., 5)
+**Solution**: Either remove merge_iterations (auto-calculate) or specify integer (e.g., 15)
 
 **Error**: `Priority must be a positive integer, got: 'high'`
 **Solution**: Use numeric priority (1 for highest, 2 for second, etc.)

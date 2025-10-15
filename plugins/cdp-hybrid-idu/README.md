@@ -117,13 +117,13 @@ Complete end-to-end hybrid ID unification setup from scratch.
 
 ---
 
-### `/cdp-hybrid-idu:hybrid-validate`
+### `/cdp-hybrid-idu:hybrid-unif-config-validate`
 
 Validate YAML configuration before SQL generation.
 
 **Usage:**
 ```bash
-/cdp-hybrid-idu:hybrid-validate
+/cdp-hybrid-idu:hybrid-unif-config-validate
 ```
 
 **Validates:**
@@ -394,8 +394,7 @@ canonical_ids:
   - name: unified_customer_id
     merge_by_keys: [email, customer_id, phone_number]
     # Optional: key_priorities: [3, 1, 2]
-    merge_iterations: 10
-    incremental_merge_iterations: 5
+    merge_iterations: 15
 
 #####################################################
 ## Master table attributes and aggregation rules
@@ -462,7 +461,7 @@ canonical_ids:
     merge_by_keys:           # Keys to merge on
       - email
       - phone
-    merge_iterations: 10     # Max iterations
+    merge_iterations: 15     # Max iterations
 ```
 
 #### Master Tables Section
@@ -613,7 +612,7 @@ execute(f"""
 
 ```bash
 # Validate YAML first
-/cdp-hybrid-idu:hybrid-validate
+/cdp-hybrid-idu:hybrid-unif-config-validate
 
 # If PASS, generate SQL
 /cdp-hybrid-idu:hybrid-generate-snowflake

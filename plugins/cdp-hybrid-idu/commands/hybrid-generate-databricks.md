@@ -160,7 +160,7 @@ tables:
 canonical_ids:
   - name: unified_id
     merge_by_keys: [email, customer_id]
-    merge_iterations: 5
+    merge_iterations: 15
 
 master_tables:
   - name: customer_master

@@ -81,7 +81,7 @@ Create a single `unify.yml` that defines:
 3. `/cdp-hybrid-idu:hybrid-generate-snowflake` - Generate Snowflake SQL from YAML
 4. `/cdp-hybrid-idu:hybrid-execute-databricks` - Execute Databricks workflow
 5. `/cdp-hybrid-idu:hybrid-execute-snowflake` - Execute Snowflake workflow
-6. `/cdp-hybrid-idu:hybrid-validate` - Validate YAML configuration
+6. `/cdp-hybrid-idu:hybrid-unif-config-validate` - Validate YAML configuration
 
 ## Generated SQL Workflow Structure
 
@@ -131,7 +131,7 @@ tables:
 canonical_ids:
   - name: unified_id
     merge_by_keys: [email, customer_id, phone_number]
-    merge_iterations: 10  # Optional: auto-calculated if not specified
+    merge_iterations: 15  # Optional: auto-calculated if not specified
 
 master_tables:
   - name: customer_master
@@ -210,7 +210,7 @@ Requires:
 
 ### Validate Configuration
 ```
-/cdp-hybrid-idu:hybrid-validate
+/cdp-hybrid-idu:hybrid-unif-config-validate
 
 Checks:
 - YAML syntax and structure
@@ -457,7 +457,7 @@ python3 scripts/databricks/databricks_sql_executor.py \
 ### Getting Help
 - Review generated SQL files for debugging
 - Check execution logs in platform consoles
-- Use `/cdp-hybrid-idu:hybrid-validate` for configuration issues
+- Use `/cdp-hybrid-idu:hybrid-unif-config-validate` for configuration issues
 
 ## Summary
 

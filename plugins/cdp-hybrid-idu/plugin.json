@@ -22,7 +22,7 @@
     "commands/hybrid-generate-snowflake.md",
     "commands/hybrid-execute-databricks.md",
     "commands/hybrid-execute-snowflake.md",
-    "commands/hybrid-validate.md"
+    "commands/hybrid-unif-config-validate.md"
   ],
   "keywords": [
     "cdp",

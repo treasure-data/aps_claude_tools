@@ -261,8 +261,7 @@ tables:
 canonical_ids:
   - name: unified_customer_id
     merge_by_keys: [email, phone, user_id]
-    merge_iterations: 5
-    incremental_merge_iterations: 3
+    merge_iterations: 15
 
 # Define master table
 master_tables:

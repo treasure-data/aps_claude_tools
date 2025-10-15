@@ -108,7 +108,6 @@ persistent_ids:
   - name: {persistent_id_name}
     merge_by_keys: [email, td_client_id, phone, ...]
     merge_iterations: 15
-    incremental_merge_iterations: 10
 
 # OR
 
@@ -116,7 +115,6 @@ canonical_ids:
   - name: {canonical_id_name}
     merge_by_keys: [email, td_client_id, phone, ...]
     merge_iterations: 15
-    incremental_merge_iterations: 10
 ```
 
 ### Step 4: Validate and Update Schema (CRITICAL)
@@ -194,7 +192,6 @@ persistent_ids:
   - name: td_claude_id
     merge_by_keys: [email, td_client_id]
     merge_iterations: 15
-    incremental_merge_iterations: 10
 ```
 
 ### Example id_unification.dig (US region, incremental)

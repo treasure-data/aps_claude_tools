@@ -171,7 +171,7 @@ User input: (blank - auto-calculate)
 canonical_ids:
   - name: unified_id
     merge_by_keys: [email, customer_id, phone_number]
-    # merge_iterations: auto-calculated
+    # merge_iterations: 15auto-calculated
 ```
 
 ---
@@ -348,7 +348,7 @@ tables:
 canonical_ids:
   - name: unified_id
     merge_by_keys: [email, customer_id, phone_number]
-    merge_iterations: 5
+    merge_iterations: 15
 
 master_tables:
   - name: customer_master
