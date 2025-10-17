@@ -18,16 +18,10 @@
   ],
   "keywords": [
     "cdp",
-    "ingestion",
+    "ingest",
+    "ingestiion",
     "treasure-data",
-    "digdag",
-    "workflow",
-    "etl",
-    "data-pipeline",
-    "klaviyo",
-    "bigquery",
-    "onetrust",
-    "shopify"
+    "workflow"
   ],
   "categories": [
     "data-engineering",

@@ -20,15 +20,7 @@
     "cdp",
     "staging",
     "transformation",
-    "treasure-data",
-    "presto",
-    "trino",
-    "hive",
-    "data-quality",
-    "pii",
-    "json-extraction",
-    "deduplication",
-    "data-pipeline"
+    "treasure-data"
   ],
   "categories": [
     "data-engineering",
