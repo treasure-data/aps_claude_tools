@@ -1,0 +1,36 @@
+{
+  "name": "cdp-orchestrator",
+  "description": "End-to-end CDP implementation orchestrator with automated workflow generation, deployment, execution, and monitoring. Orchestrates Ingestion → Hist-Union → Staging → Unification pipeline with TD Toolbelt integration.",
+  "version": "1.0.0",
+  "author": {
+    "name": "@cdp-tools-marketplace",
+    "organization": "APS CDP Team"
+  },
+  "agents": [
+    "agents/cdp-pipeline-orchestrator.md"
+  ],
+  "commands": [
+    "commands/cdp-implement.md"
+  ],
+  "keywords": [
+    "cdp",
+    "orchestrator",
+    "pipeline",
+    "automation",
+    "treasure-data",
+    "ingestion",
+    "staging",
+    "unification",
+    "end-to-end",
+    "workflow-deployment"
+  ],
+  "categories": [
+    "orchestration",
+    "automation",
+    "data-engineering",
+    "workflows"
+  ],
+  "documentation": {
+    "readme": "commands/cdp-implement.md"
+  }
+}
