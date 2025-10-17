@@ -228,17 +228,32 @@ left join
   field_config f
 on j.database = f.database
 and j.tbl = f.tbl)
-
+, final_sql_without_exclusion as 
+(
+  select
+  'select ' || chr(10) ||
+    fields || ',' || chr(10) ||
+    'k0.persistent_id as ' || '${globals.canonical_id}' || chr(10) ||
+  'from ' || chr(10) ||
+    database || '.' || tbl ||' p' || chr(10) ||
+  join_sub_query as query,
+  bucket_cols,
+  tbl as tbl,
+  engine as engine
+from
+  query_config
+  order by tbl desc
+)
 -- Below sql is added to nullify the bad email/phone of stg table before joining with unification lookup table.
 , exclusion_join as
 (
   select
     database, tbl,
     ARRAY_JOIN(ARRAY_AGG('case when ' || unification_key || '.key_value is null then a.' || table_field || ' else null end as ' || table_field), ',' || chr(10))  as select_list,
-    ARRAY_JOIN(ARRAY_AGG(' left join mck_references.exclusion_list ' || unification_key || ' on a.' || table_field || ' = ' || unification_key || '.key_value and ' || unification_key || '.key_name = ''' || unification_key || ''''), ' ' || chr(10)) join_list
+    ARRAY_JOIN(ARRAY_AGG(' left join ${client_short_name}_${lkup}.exclusion_list ' || unification_key || ' on a.' || table_field || ' = ' || unification_key || '.key_value and ' || unification_key || '.key_name = ''' || unification_key || ''''), ' ' || chr(10)) join_list
     -- , *
   from final_config
-  where unification_key in (select distinct key_name from mck_references.exclusion_list) -- This is to generate the left join & case statements for fields which are part of exclusion_list
+  where unification_key in (select distinct key_name from ${client_short_name}_${lkup}.exclusion_list) -- This is to generate the left join & case statements for fields which are part of exclusion_list
   group by database, tbl
   -- order by database, tbl
 )
@@ -249,7 +264,7 @@ and j.tbl = f.tbl)
   FROM information_schema.COLUMNS
   where
     table_schema || table_name || column_name  not in (select database || tbl || table_field from final_config
-                                                        where unification_key in ( select distinct key_name from mck_references.exclusion_list)
+                                                        where unification_key in ( select distinct key_name from ${client_short_name}_${lkup}.exclusion_list)
                                                       )
     and table_schema || table_name  in (select database || tbl from tbl_config)
     -- and table_name = 'table1'
@@ -258,34 +273,41 @@ and j.tbl = f.tbl)
 )
 , final_exclusion_tbl as
 (
-select
-' with exclusion_data as (' || chr(10) || ' select ' || b.fields || ',' || chr(10) ||  a.select_list || chr(10) ||
+  select
+  ' with exclusion_data as (' || chr(10) || ' select ' || b.fields || ',' || chr(10) ||  a.select_list || chr(10) ||
 
-' from ' || a.database || '.' || a.tbl || ' a ' || chr(10) || a.join_list || chr(10) || ')'
-as with_exclusion_sql_str
-, a.*
-from exclusion_join a
-inner join src_columns b on a.database = b.table_schema and a.tbl = b.table_name
-order by b.table_schema, b.table_name
+  ' from ' || a.database || '.' || a.tbl || ' a ' || chr(10) || a.join_list || chr(10) || ')'
+  as with_exclusion_sql_str
+  , a.*
+  from exclusion_join a
+  inner join src_columns b on a.database = b.table_schema and a.tbl = b.table_name
+  order by b.table_schema, b.table_name
 )
+, final_sql_with_exclusion as (
+  select
+    with_exclusion_sql_str ||  chr(10) ||
 
-select
-  with_exclusion_sql_str ||  chr(10) ||
-
-  'select ' || chr(10) ||
-    a.fields || ',' || chr(10) ||
-    'k0.persistent_id as ' || '${globals.canonical_id}' || chr(10) ||
-  'from ' || chr(10) ||
-    -- a.database || '.' || a.tbl ||' p' || chr(10) ||
-   ' exclusion_data p' || chr(10) ||
-  a.join_sub_query as query,
-  a.bucket_cols,
-  a.tbl as tbl,
-  a.engine as engine
-from
-query_config a
-join final_exclusion_tbl b on a.database = b.database and a.tbl = b.tbl
-order by a.database, a.tbl
+    'select ' || chr(10) ||
+      a.fields || ',' || chr(10) ||
+      'k0.persistent_id as ' || 'customer_360_persistent_id' || chr(10) ||
+    'from ' || chr(10) ||
+      -- a.database || '.' || a.tbl ||' p' || chr(10) ||
+    ' exclusion_data p' || chr(10) ||
+    a.join_sub_query as query,
+    a.bucket_cols,
+    a.tbl as tbl,
+    a.engine as engine
+  from
+  query_config a
+  join final_exclusion_tbl b on a.database = b.database and a.tbl = b.tbl
+  order by a.database, a.tbl
+)
+select * from final_sql_with_exclusion
+union all 
+select a.* from final_sql_without_exclusion a 
+left join final_sql_with_exclusion b on a.tbl = b.tbl 
+where b.tbl is null 
+order by 4, 3
 ```
 
 **execute_join_presto.sql** (COPY EXACTLY):
