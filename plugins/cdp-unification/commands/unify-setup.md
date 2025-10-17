@@ -26,8 +26,11 @@ Please provide the list of tables you want to include in ID unification:
 - I'll analyze each table using Treasure Data MCP tools to extract user identifiers
 
 ### 2. Client Configuration
-- **Client short name**: Your client identifier (e.g., `mck`, `client_name`)
+- **Client short name**: Your client identifier (e.g., `mck`, `ik_claude`)
 - **Unification name**: Name for this unification project (e.g., `claude`, `customer_360`)
+- **Lookup/References database suffix**: (default: `references`)
+  - Creates database: `${client_short_name}_${lookup_suffix}` (e.g., `ik_claude_references`)
+  - ⚠️ **I WILL CREATE THIS DATABASE** if it doesn't exist
 
 ### 3. ID Method Selection
 I'll explain the options and help you choose:
@@ -93,7 +96,25 @@ I'll create:
 - `unification/unif_runner.dig` - Main workflow that calls:
   - prep_creation → id_unification → enrichment (in sequence)
 
-### Step 7: Deployment Guidance
+### Step 7: ⚠️ MANDATORY VALIDATION (NEW!)
+**CRITICAL**: Before deployment, I MUST run comprehensive validation:
+- `/cdp-unification:unify-validate` command
+- Validates ALL files against exact templates
+- Checks database and table existence
+- Verifies configuration consistency
+- **BLOCKS deployment if ANY validation fails**
+
+**If validation FAILS:**
+- I will show exact fix commands
+- You must fix all errors
+- Re-run validation until 100% pass
+- Only then proceed to deployment
+
+**If validation PASSES:**
+- Proceed to deployment with confidence
+- All files are production-ready
+
+### Step 8: Deployment Guidance
 I'll provide:
 - Configuration summary
 - Deployment instructions

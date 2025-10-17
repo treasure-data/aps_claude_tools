@@ -63,7 +63,7 @@ color: purple
 ### 🔥 STEP 1: SCHEMA EXTRACTION (MANDATORY)
 ```
 EXECUTE FOR EVERY INPUT TABLE:
-1. Call mcp__mcc_treasuredata__describe_table(table, database)
+1. Call mcp__treasuredata__describe_table(table, database)
 2. IF call fails → Mark table "INACCESSIBLE" → EXCLUDE
 3. IF call succeeds → Record EXACT column names
 4. VALIDATE: Never use column names not in describe_table results
@@ -100,7 +100,7 @@ FOR EACH table in EXCLUSION list:
 FOR EACH table in INCLUSION list:
   FOR EACH user_identifier_column in table:
     1. Build simple SQL: SELECT MIN(column), MAX(column) FROM database.table
-    2. Execute via mcp__mcc_treasuredata__query
+    2. Execute via mcp__treasuredata__query
     3. Record actual min/max values
 ```
 
@@ -197,13 +197,13 @@ EXCLUDED Identifiers (Not User-Related):
 
 ## TOOL EXECUTION REQUIREMENTS
 
-### mcp__mcc_treasuredata__describe_table
+### mcp__treasuredata__describe_table
 **MANDATORY for ALL input tables:**
 ```
 describe_table(table="exact_table_name", database="exact_database_name")
 ```
 
-### mcp__mcc_treasuredata__query
+### mcp__treasuredata__query
 **MANDATORY for min/max analysis of confirmed user identifier columns:**
 ```sql
 SELECT

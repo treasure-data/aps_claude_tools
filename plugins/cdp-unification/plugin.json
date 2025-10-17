@@ -11,13 +11,15 @@
     "agents/unif-keys-extractor.md",
     "agents/dynamic-prep-creation.md",
     "agents/id-unification-creator.md",
-    "agents/unification-staging-enricher.md"
+    "agents/unification-staging-enricher.md",
+    "agents/unification-validator.md"
   ],
   "commands": [
     "commands/unify-setup.md",
     "commands/unify-extract-keys.md",
     "commands/unify-create-prep.md",
-    "commands/unify-create-config.md"
+    "commands/unify-create-config.md",
+    "commands/unify-validate.md"
   ],
   "keywords": [
     "cdp",
@@ -27,7 +29,9 @@
     "identity",
     "persistent-id",
     "canonical-id",
-    "data-pipeline"
+    "data-pipeline",
+    "validation",
+    "quality-gates"
   ],
   "categories": [
     "data-engineering",

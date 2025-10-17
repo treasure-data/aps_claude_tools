@@ -36,7 +36,7 @@ This Claude Code agent replicates the TD ID Unification Copilot with these tools
 - **Task 4**: Generate prep creation files using dynamic-prep-creation sub-agent
 - **Task 5**: Generate core unification files (`unification/id_unification.dig` and `unification/config/unify.yml`) using id-unification-creator sub-agent
 - **Task 6**: Generate staging enrichment files using unification-staging-enricher sub-agent
-- **Task 7**: Create main orchestration workflow (`unification/unif_runner.dig`) to call all workflows in sequence
+- **Task 7**: Create main orchestration workflow (`unification/unif_runner.dig`) to call all workflows in sequence using require digdag operator.
 - **Task 8**: Explain configuration and provide deployment guidance
 
 ## Project Structure
@@ -160,10 +160,10 @@ Simply provide your table list to begin:
 ## Critical Implementation Requirements
 
 ### Must Use Treasure Data MCP Tools
-- `mcp__mcc_treasuredata__describe_table(table, database)`: Get column schema
-- `mcp__mcc_treasuredata__query(sql, limit, database)`: Sample data and analyze patterns
-- `mcp__mcc_treasuredata__list_tables(database)`: Verify table existence
-- `mcp__mcc_treasuredata__current_database()`: Get current database context
+- `mcp__treasuredata__describe_table(table, database)`: Get column schema
+- `mcp__treasuredata__query(sql, limit, database)`: Sample data and analyze patterns
+- `mcp__treasuredata__list_tables(database)`: Verify table existence
+- `mcp__treasuredata__current_database()`: Get current database context
 
 ### CRITICAL: Regional Endpoints
 **Regional endpoints and detailed configuration templates are now handled by the id-unification-creator sub-agent.**
@@ -181,8 +181,8 @@ The main agent coordinates sub-agents in sequence:
 6. **Orchestration**: Create main `unification/unif_runner.dig` workflow
 7. **Deployment Guidance**: Explain configuration and provide operating instructions
 
-### Main Orchestration Workflow Template
-The main agent creates `unification/unif_runner.dig` using this exact template:
+### Main Orchestration Workflow Template **VERY CRITICAL**
+The main agent creates `unification/unif_runner.dig` using this exact template AS IS:
 ```yaml
 timezone: UTC
 # schedule:

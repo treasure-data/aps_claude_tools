@@ -46,16 +46,41 @@ You MUST create EXACTLY 3 types of files using FIXED templates:
 
 **MANDATORY STEP-BY-STEP PROCESS:**
 1. Read unification/config/src_prep_params.yml file
-2. Extract all `alias_as` values from all prep tables
-3. Use ONLY those columns in the unif_input_tbl key_columns section
-4. Example: if src_prep_params.yml has alias_as: [customer_id, email, td_client_id, td_global_id], then use ONLY those 4 columns
+2. Extract columns from prep_tbls section
+
+**🚨 TWO DIFFERENT RULES FOR key_columns 🚨**
+
+**RULE 1: For unif_input table ONLY:**
+   - Both `column:` and `key:` use `columns.col.alias_as` (e.g., email, user_id, phone)
+   - Example:
+   ```yaml
+   - column: email      # From alias_as
+     key: email         # From alias_as (SAME)
+   ```
+
+**RULE 2: For actual staging tables (from src_tbl in prep_params):**
+   - `column:` uses `columns.col.name` (e.g., email_address_std, phone_number_std)
+   - `key:` uses `columns.col.alias_as` (e.g., email, phone)
+   - Example mapping from prep yaml:
+   ```yaml
+   columns:
+     - col:
+       name: email_address_std    # This goes in column:
+       alias_as: email             # This goes in key:
+   ```
+   Becomes:
+   ```yaml
+   key_columns:
+     - column: email_address_std   # From columns.col.name
+       key: email                   # From columns.col.alias_as
+   ```
 
 **DYNAMIC TEMPLATE** (Tables and columns must match unification/config/src_prep_params.yml):
-- **🚨 MANDATORY: READ unification/config/src_prep_params.yml FIRST** - Extract alias_as columns before creating stage_enrich.yml
+- **🚨 MANDATORY: READ unification/config/src_prep_params.yml FIRST** - Extract columns.col.name and columns.col.alias_as before creating stage_enrich.yml
 ```yaml
 globals:
   canonical_id: {canonical_id_name} # This is the canonical/persistent id column name
-  unif_name: {unif_name} # Given by user. 
+  unif_name: {unif_name} # Given by user.
 
 tables:
   - database: ${client_short_name}_${stg} # Always use this. Do Not Change.
@@ -63,19 +88,25 @@ tables:
     engine: presto
     bucket_cols: ['${globals.canonical_id}']
     key_columns:
-      # ⚠️ CRITICAL: ONLY include columns that exist in unification/config/src_prep_params.yml alias_as fields
-      # DO NOT use template columns - read actual prep configuration
-      # Example format: - {column: actual_column_from_prep, key: actual_column_from_prep}
+      # ⚠️ CRITICAL MAPPING RULE:
+      # column: USE columns.col.name FROM src_prep_params.yml (e.g., email_address_std, phone_number_std)
+      # key: USE columns.col.alias_as FROM src_prep_params.yml (e.g., email, phone)
+      # EXAMPLE (if src_prep_params.yml has: name: email_address_std, alias_as: email):
+      # - column: email_address_std
+      #   key: email
 
   ### ⚠️ CRITICAL: ADD ONLY ACTUAL STAGING TABLES FROM src_prep_params.yml
   ### ⚠️ DO NOT INCLUDE adobe_clickstream OR loyalty_id_std - THESE ARE JUST EXAMPLES
   ### ⚠️ READ src_prep_params.yml AND ADD ONLY THE ACTUAL TABLES DEFINED THERE
-  # EXAMPLE FORMAT ONLY (DO NOT COPY):
+  ### ⚠️ USE src_tbl value (NOT snk_tbl which has _prep suffix)
+  # REAL EXAMPLE (if src_prep_params.yml has src_tbl: snowflake_orders):
   # - database: ${client_short_name}_${stg}
-  #   table: [ACTUAL_TABLE_FROM_src_prep_params.yml]
+  #   table: snowflake_orders    # From src_tbl (NO _prep suffix!)
   #   engine: presto
   #   bucket_cols: ['${globals.canonical_id}']
-  #   key_columns: [ACTUAL_COLUMNS_FROM_src_prep_params.yml]
+  #   key_columns:
+  #     - column: email_address_std    # From columns.col.name
+  #       key: email                    # From columns.col.alias_as
 ```
 
 **VARIABLES TO REPLACE**:
