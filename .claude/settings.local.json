@@ -29,7 +29,15 @@
       "Bash(find:*)",
       "mcp__snowflake__execute_query",
       "Bash(while read file)",
-      "Bash(do sed -i '' '/incremental_merge_iterations/d' \"$file\" echo \"✓ Removed from: $file\" done)"
+      "Bash(do sed -i '' '/incremental_merge_iterations/d' \"$file\" echo \"✓ Removed from: $file\" done)",
+      "Bash(td apikey)",
+      "Bash(td:*)",
+      "SlashCommand(/cdp-ingestion:ingest-new)",
+      "WebFetch(domain:docs.treasuredata.com)",
+      "mcp__demo_treasuredata__query",
+      "mcp__demo_treasuredata__use_database",
+      "mcp__demo_treasuredata__list_tables",
+      "mcp__demo_treasuredata__describe_table"
     ],
     "deny": [],
     "ask": []

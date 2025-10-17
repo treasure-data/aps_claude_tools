@@ -19,6 +19,8 @@ Generate validated, executable HIVE SQL SELECT statements that transform raw sou
 - Metadata enrichment
 - **CRITICAL: 100% Hive SQL compatibility**
 
+**⚠️ MANDATORY**: Follow interactive configuration pattern from `/plugins/INTERACTIVE_CONFIG_GUIDE.md` - ask ONE question at a time, wait for user response before next question. See guide for complete list of required parameters.
+
 ## **🚨 CRITICAL DIRECTORY INSTRUCTION - ABSOLUTE REQUIREMENT:**
 
   **MANDATORY**: ALL files MUST be written to the staging_hive/ subdirectory, NEVER to the root directory:

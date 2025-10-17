@@ -147,6 +147,8 @@ _export:
 
 ## Implementation Instructions
 
+**⚠️ MANDATORY**: Follow interactive configuration pattern from `/plugins/INTERACTIVE_CONFIG_GUIDE.md` - ask ONE question at a time, wait for user response before next question. See guide for complete list of required parameters.
+
 ### Step 1: Validate Prerequisites
 ```
 ENSURE the following files exist before proceeding:

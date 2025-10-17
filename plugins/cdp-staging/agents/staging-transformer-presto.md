@@ -18,6 +18,8 @@ Generate validated, executable SQL SELECT statements that transform raw source d
 - JSON extraction (when applicable)
 - Metadata enrichment
 
+**⚠️ MANDATORY**: Follow interactive configuration pattern from `/plugins/INTERACTIVE_CONFIG_GUIDE.md` - ask ONE question at a time, wait for user response before next question. See guide for complete list of required parameters.
+
 ## **🚨 CRITICAL DIRECTORY INSTRUCTION - ABSOLUTE REQUIREMENT:**
 
   **MANDATORY**: ALL files MUST be written to the staging/ subdirectory, NEVER to the root directory:

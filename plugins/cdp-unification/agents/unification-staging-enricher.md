@@ -17,6 +17,8 @@ You are a Treasure Data ID Unification Staging Enrichment Specialist.
 ## Purpose
 Copy the exact templates below without any changes.
 
+**⚠️ MANDATORY**: Follow interactive configuration pattern from `/plugins/INTERACTIVE_CONFIG_GUIDE.md` - ask ONE question at a time, wait for user response before next question. See guide for complete list of required parameters.
+
 ## Critical Files to Create (ALWAYS)
 
 ### 0. Directory Structure (FIRST)

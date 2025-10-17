@@ -65,18 +65,30 @@ Parse:
 - target_table: mck_src.shopify_products_histunion
 ```
 
-### Step 2: Get Table Schemas via MCP
-**CRITICAL**: Use MCP tool to get exact schemas:
+### Step 2: Get Table Schemas via MCP & Handle Missing Tables
+**CRITICAL**: Use MCP tool to get exact schemas and handle missing tables:
 ```
 1. Call: mcp__mcc_treasuredata__describe_table
    - table_name: {inc_table}
-   - Get complete column list and types
+   - If table doesn't exist: Mark as MISSING_INC
 
 2. Call: mcp__mcc_treasuredata__describe_table
    - table_name: {hist_table}
-   - Get complete column list and types
+   - If table doesn't exist: Mark as MISSING_HIST
 
-3. Compare schemas:
+3. Handle Missing Tables:
+   IF both tables exist:
+     - Compare schemas normally
+   ELIF only hist table exists (inc missing):
+     - Use hist table schema as reference
+     - Add CREATE TABLE IF NOT EXISTS for inc table in SQL
+   ELIF only inc table exists (hist missing):
+     - Use inc table schema as reference
+     - Add CREATE TABLE IF NOT EXISTS for hist table in SQL
+   ELSE:
+     - ERROR: At least one table must exist
+
+4. Compare schemas (if both exist):
    - Identify columns in inc but not in hist (e.g., incremental_date)
    - Identify columns in hist but not in inc (rare)
    - Note exact column order from inc table
@@ -105,17 +117,27 @@ ELSE:
 ```
 
 ### Step 5: Generate SQL File
-Create SQL with exact schema:
+Create SQL with exact schema and handle missing tables:
 ```
 File: hist_union/queries/{base_table_name}.sql
 
 Content:
-- CREATE TABLE with EXACT inc table schema
+- CREATE TABLE IF NOT EXISTS for missing inc table (if needed)
+- CREATE TABLE IF NOT EXISTS for missing hist table (if needed)
+- CREATE TABLE IF NOT EXISTS for target histunion table
 - INSERT with UNION ALL:
   - Hist SELECT (add NULL for missing columns if needed)
   - Inc SELECT (all columns in exact order)
 - WHERE clause using inc_log watermarks (skip for FULL LOAD)
 - UPDATE watermarks for both hist and inc tables
+
+**IMPORTANT**: If inc table is missing:
+  - Add CREATE TABLE IF NOT EXISTS {inc_table} with hist schema BEFORE main logic
+  - This ensures inc table exists for UNION operation
+
+**IMPORTANT**: If hist table is missing:
+  - Add CREATE TABLE IF NOT EXISTS {hist_table} with inc schema BEFORE main logic
+  - This ensures hist table exists for UNION operation
 ```
 
 ### Step 6: Create or Update Workflow
@@ -249,6 +271,8 @@ Before delivering code, verify ALL gates pass:
 
 ## Response Pattern
 
+**⚠️ MANDATORY**: Follow interactive configuration pattern from `/plugins/INTERACTIVE_CONFIG_GUIDE.md` - ask ONE question at a time, wait for user response before next question. See guide for complete list of required parameters.
+
 When user requests hist-union workflow:
 
 1. **Parse Input**:
@@ -315,6 +339,8 @@ When user requests hist-union workflow:
 ### Validation Checklist
 Before delivering, ask yourself:
 - [ ] Did I use MCP tool for both inc and hist schemas?
+- [ ] Did I check if inc or hist table is missing?
+- [ ] Did I add CREATE TABLE IF NOT EXISTS for missing tables?
 - [ ] Did I compare the schemas to find differences?
 - [ ] Did I check if this is a full load table?
 - [ ] Did I use the correct SQL template?

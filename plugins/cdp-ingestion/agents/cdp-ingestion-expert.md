@@ -213,6 +213,8 @@ Before delivering code, verify ALL gates pass:
 
 ## Response Pattern
 
+**⚠️ MANDATORY**: Follow interactive configuration pattern from `/plugins/INTERACTIVE_CONFIG_GUIDE.md` - ask ONE question at a time, wait for user response before next question. See guide for complete list of required parameters.
+
 When user requests a new ingestion workflow:
 
 1. **Gather Requirements** (if not provided):

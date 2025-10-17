@@ -1,11 +1,27 @@
 # CDP Ingestion Plugin - Production-Ready Workflow Generator
 
-## ⚠️ CRITICAL: THREE GOLDEN RULES - ENFORCE AT ALL TIMES ⚠️
+## ⚠️ CRITICAL: FOUR GOLDEN RULES - ENFORCE AT ALL TIMES ⚠️
+
+### 0️⃣ FETCH TREASURE DATA DOCUMENTATION FIRST - MANDATORY FOR ALL SOURCES
+**BEFORE DOING ANYTHING ELSE, YOU MUST fetch the official TD connector documentation:**
+- **STEP 1**: Use WebFetch to get official Treasure Data documentation for the connector
+  - URL Pattern: `https://docs.treasuredata.com/display/public/INT/{Source}+Import+Integration`
+  - Example: `https://docs.treasuredata.com/display/public/INT/Snowflake+Import+Integration`
+  - Extract the EXACT YAML configuration template from the CLI example
+  - Save the exact `in:` section parameters
+- **STEP 2**: Use the EXACT template from TD documentation for the load.yml file
+  - DO NOT guess parameter names
+  - DO NOT use similar sources as reference
+  - DO NOT assume parameters based on other connectors
+  - ONLY use what you extracted from official TD docs
+- **CRITICAL**: With 100+ potential sources, you CANNOT manually document each one
+- **CRITICAL**: The YAML format varies significantly between connectors
+- **CRITICAL**: Using wrong parameter names (e.g., `account` vs `account_name`) causes failures
 
 ### 1️⃣ READ DOCUMENTATION FIRST - ALWAYS
 **YOU MUST read relevant documentation BEFORE generating ANY file:**
 - For new sources: Read `docs/sources/template-new-source.md`
-- For existing sources: Read `docs/sources/{source-name}.md`
+- For existing sources: Read `docs/sources/{source-name}.md` (if available)
 - For patterns: Read relevant `docs/patterns/*.md` files
 - **NEVER generate code without first reading documentation**
 - Templates are NOT optional - they are MANDATORY
@@ -49,11 +65,27 @@
 
 **BEFORE generating ANY workflow, config, or SQL file, you MUST:**
 
-### Step 1: Read Documentation
+### Step 0: Fetch Official TD Connector Documentation (CRITICAL - DO THIS FIRST!)
+**For ANY data source, you MUST:**
+1. Use WebFetch to fetch official Treasure Data connector documentation
+   - URL: `https://docs.treasuredata.com/display/public/INT/{SourceName}+Import+Integration`
+   - Examples:
+     - Snowflake: `https://docs.treasuredata.com/display/public/INT/Snowflake+Import+Integration`
+     - Salesforce: `https://docs.treasuredata.com/display/public/INT/Salesforce+Import+Integration`
+     - BigQuery: `https://docs.treasuredata.com/display/public/INT/BigQuery+Import+Integration`
+2. Extract the EXACT YAML configuration from the CLI/workflow example
+3. Identify all required parameters in the `in:` section
+4. Note parameter names EXACTLY (e.g., `account_name` not `account`)
+5. Save this template - you WILL use it character-for-character
+
+**DO NOT SKIP THIS STEP - It prevents 90% of workflow failures**
+
+### Step 1: Read Internal Documentation
 Read the relevant documentation file(s) completely:
-- For new sources: Read `docs/sources/template-new-source.md`
-- For existing sources: Read `docs/sources/{source-name}.md`
-- For patterns: Read relevant `docs/patterns/*.md` files
+- For workflow patterns: Read `docs/patterns/workflow-patterns.md`
+- For logging: Read `docs/patterns/logging-patterns.md`
+- For timestamps: Read `docs/patterns/timestamp-formats.md`
+- For existing source (if available): Read `docs/sources/{source-name}.md`
 
 ### Step 2: Identify ALL Files Needed
 Create complete list of files required:
@@ -185,25 +217,33 @@ Ensure all required sections from template are present:
 **YOUR MANDATORY RESPONSE PATTERN:**
 
 ```
+0. Fetch TD official documentation FIRST:
+   "Fetching official Treasure Data documentation for [source] connector..."
+   - Use WebFetch to get https://docs.treasuredata.com/display/public/INT/[Source]+Import+Integration
+   - Extract EXACT YAML configuration template
+   - Announce: "Found exact YAML template with parameters: [list key parameters]"
+
 1. Announce file list:
    "I'll create all required files for [source/task]:"
    - List ALL files that will be created
    - Show file paths clearly
 
-2. Read documentation:
-   "Reading documentation to get exact templates..."
-   - Use Read tool to load ALL relevant documentation
+2. Read internal documentation:
+   "Reading internal documentation for workflow patterns..."
+   - Use Read tool to load workflow patterns, logging patterns, etc.
 
 3. Confirm templates:
-   "I've found the exact templates. Creating all files now..."
+   "Using EXACT template from TD docs + internal patterns. Creating all files now..."
 
 4. Generate ALL files in ONE response:
    - Use multiple Write/Edit tool calls in SINGLE response
    - Create complete, working file set
+   - Use EXACT YAML from TD docs for load.yml
 
 5. Verify and summarize:
-   "Created [N] files using exact templates from [docs]:"
+   "Created [N] files using exact templates from official TD docs:"
    - List all files created with checkmarks
+   - Confirm YAML matches official TD documentation
    - Confirm all verification gates passed
    - Provide next steps for user
 ```

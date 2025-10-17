@@ -5,3 +5,7 @@ unify_old_bkp.yml
 .claude/conventions/planning-documentation.md
 plugins/cdp-hybrid-idu/PLAN-hybrid-unif-config-creator.md
 plugins/cdp-orchestrator/PLAN.md
+ingestion/*
+hist_unio/*
+staging/*
+unification/*
