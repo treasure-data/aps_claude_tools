@@ -592,8 +592,6 @@ _export:
     wave: ${dependency_groups}
   _do:
     +wave_processing:
-      echo>: "Processing dependency wave: ${wave.group} (depends on: ${wave.depends_on})"
-
       # Execute all tables in current wave (parallel if wave.parallel = true)
       +wave_table_transformations:
         _parallel: ${wave.parallel}
@@ -620,12 +618,10 @@ _export:
               # INITIAL LOAD: Full table processing (first time)
               _do:
                 +initial_load:
-                  echo>: "Performing INITIAL load for ${table.staging_table} (table not exists)"
-
-                +transform_initial:
-                  td>: init_queries/${table.source_db}_${table.name}_init.sql
-                  database: ${staging_database}
-                  create_table: ${table.staging_table}
+                  +transform_initial:
+                    td>: init_queries/${table.source_db}_${table.name}_init.sql
+                    database: ${staging_database}
+                    create_table: ${table.staging_table}
 
                 +log_initial_progress:
                   td>:
@@ -640,21 +636,19 @@ _export:
               # INCREMENTAL LOAD: Process only new records
               _else_do:
                 +incremental_load:
-                  echo>: "Performing INCREMENTAL load for ${table.staging_table} (table exists)"
-
-                # Standard incremental transformation
-                +transform_incremental:
-                  if>: ${table.has_dedup}
-                  _do:
-                    +run_work:
-                      td>: queries/${table.source_db}_${table.name}.sql
-                      database: ${staging_database}
-                      insert_into: work_${table.staging_table}
-                  _else_do:
-                    +run:
-                      td>: queries/${table.source_db}_${table.name}.sql
-                      database: ${staging_database}
-                      insert_into: ${table.staging_table}
+                  # Standard incremental transformation
+                  +transform_incremental:
+                    if>: ${table.has_dedup}
+                    _do:
+                      +run_work:
+                        td>: queries/${table.source_db}_${table.name}.sql
+                        database: ${staging_database}
+                        insert_into: work_${table.staging_table}
+                    _else_do:
+                      +run:
+                        td>: queries/${table.source_db}_${table.name}.sql
+                        database: ${staging_database}
+                        insert_into: ${table.staging_table}
 
                 # Conditional upsert task (only if deduplication exists)
                 +transform_upsert:
