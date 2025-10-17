@@ -592,91 +592,97 @@ _export:
     wave: ${dependency_groups}
   _do:
     +wave_processing:
-      # Execute all tables in current wave (parallel if wave.parallel = true)
-      +wave_table_transformations:
-        _parallel: ${wave.parallel}
-        for_each>:
-          table: ${wave.tables}
-        _do:
-          +table_transformation:
+      echo>: "Processing dependency wave: ${wave.group} (depends on: ${wave.depends_on})"
 
-            # Check if staging table exists
-            +check_table:
-              td>:
-              query: |
-                SELECT COUNT(*) as table_exists
-                FROM information_schema.tables
-                WHERE table_schema = '${staging_database}'
-                AND table_name = '${table.staging_table}'
-              store_last_results: true
-              database: ${staging_database}
+    # Execute all tables in current wave (parallel if wave.parallel = true)
+    +wave_table_transformations:
+      _parallel: ${wave.parallel}
+      for_each>:
+        table: ${wave.tables}
+      _do:
+        +table_transformation:
 
-            # Conditional processing based on table existence
-            +conditional_processing:
-              if>: ${td.last_results.table_exists == 0 || table.mode == 'full'}
+          # Check if staging table exists
+          +check_table:
+            td>:
+            query: |
+              SELECT COUNT(*) as table_exists
+              FROM information_schema.tables
+              WHERE table_schema = '${staging_database}'
+              AND table_name = '${table.staging_table}'
+            store_last_results: true
+            database: ${staging_database}
 
-              # INITIAL LOAD: Full table processing (first time)
-              _do:
-                +initial_load:
-                  +transform_initial:
-                    td>: init_queries/${table.source_db}_${table.name}_init.sql
-                    database: ${staging_database}
-                    create_table: ${table.staging_table}
+          # Conditional processing based on table existence
+          +conditional_processing:
+            if>: ${td.last_results.table_exists == 0 || table.mode == 'full'}
 
-                +log_initial_progress:
-                  td>:
-                  query: |
-                    INSERT INTO ${lkup_db}.inc_log
-                    SELECT '${table.name}' as table_name,
-                           COALESCE(MAX(time), 0) as inc_value,
-                           'staging' as project_name
-                    FROM ${table.source_db}.${table.name}
-                  database: ${staging_database}
+            # INITIAL LOAD: Full table processing (first time)
+            _do:
+              +initial_load:
+                echo>: "Performing INITIAL load for ${table.staging_table} (table not exists)"
 
-              # INCREMENTAL LOAD: Process only new records
-              _else_do:
-                +incremental_load:
-                  # Standard incremental transformation
-                  +transform_incremental:
-                    if>: ${table.has_dedup}
-                    _do:
-                      +run_work:
-                        td>: queries/${table.source_db}_${table.name}.sql
-                        database: ${staging_database}
-                        insert_into: work_${table.staging_table}
-                    _else_do:
-                      +run:
-                        td>: queries/${table.source_db}_${table.name}.sql
-                        database: ${staging_database}
-                        insert_into: ${table.staging_table}
+              +transform_initial:
+                td>: init_queries/${table.source_db}_${table.name}_init.sql
+                database: ${staging_database}
+                create_table: ${table.staging_table}
 
-                # Conditional upsert task (only if deduplication exists)
-                +transform_upsert:
-                  if>: ${table.has_dedup}
-                  _do:
-                    +run:
-                      td>: queries/${table.source_db}_${table.name}_upsert.sql
-                      database: ${staging_database}
-
-                # Log incremental progress
-                +log_incremental_progress:
-                  td>:
-                  query: |
-                    INSERT INTO ${lkup_db}.inc_log
-                    SELECT '${table.name}' as table_name,
-                           COALESCE(MAX(time), 0) as inc_value,
+              +log_initial_progress:
+                td>:
+                query: |
+                  INSERT INTO ${lkup_db}.inc_log
+                  SELECT '${table.name}' as table_name,
+                          COALESCE(MAX(time), 0) as inc_value,
                           'staging' as project_name
-                    FROM ${table.source_db}.${table.name}
-                  database: ${staging_database}
+                  FROM ${table.source_db}.${table.name}
+                database: ${staging_database}
 
-                # Cleanup work table (only if deduplication exists)
-                +drop_work_tbl:
-                  if>: ${table.has_dedup}
-                  _do:
-                    +drop_tables:
-                      td_ddl>:
-                      drop_tables: ["work_${table.staging_table}"]
-                      database: ${staging_database}
+            # INCREMENTAL LOAD: Process only new records
+            _else_do:
+              +incremental_load:
+                echo>: "Performing INCREMENTAL load for ${table.staging_table} (table exists)"
+
+              # Standard incremental transformation
+              +transform_incremental:
+                if>: ${table.has_dedup}
+                _do:
+                  +run_work:
+                    td>: queries/${table.source_db}_${table.name}.sql
+                    database: ${staging_database}
+                    insert_into: work_${table.staging_table}
+                _else_do:
+                  +run:
+                    td>: queries/${table.source_db}_${table.name}.sql
+                    database: ${staging_database}
+                    insert_into: ${table.staging_table}
+
+              # Conditional upsert task (only if deduplication exists)
+              +transform_upsert:
+                if>: ${table.has_dedup}
+                _do:
+                  +run:
+                    td>: queries/${table.source_db}_${table.name}_upsert.sql
+                    database: ${staging_database}
+
+              # Log incremental progress
+              +log_incremental_progress:
+                td>:
+                query: |
+                  INSERT INTO ${lkup_db}.inc_log
+                  SELECT '${table.name}' as table_name,
+                          COALESCE(MAX(time), 0) as inc_value,
+                        'staging' as project_name
+                  FROM ${table.source_db}.${table.name}
+                database: ${staging_database}
+
+              # Cleanup work table (only if deduplication exists)
+              +drop_work_tbl:
+                if>: ${table.has_dedup}
+                _do:
+                  +drop_tables:
+                    td_ddl>:
+                    drop_tables: ["work_${table.staging_table}"]
+                    database: ${staging_database}
 
 +completion:
   echo>: "Optimized incremental staging transformation completed successfully for ALL tables"
