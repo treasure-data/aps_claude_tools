@@ -534,7 +534,7 @@ dependency_groups:
     tables:
       - name: {table_name}
         source_db: {source_database}
-        staging_table: {table_name} #  without _histunion suffix
+        staging_table: {table_name without _staging suffix and _histunion suffix} #  without _histunion suffix
         has_dedup: {true/false}
         partition_columns: {column_name or column1,column2}
         mode: {mode} # inc or full
@@ -745,7 +745,7 @@ dependency_groups:
     tables:
       - name: {table_name}               # Table name (without _staging suffix)
         source_db: {source_database}     # Source database name
-        staging_table: {table_name}      # Table name (without _staging suffix and _histunion suffix)
+        staging_table: {table_name without _staging suffix and _histunion suffix}      # Table name (without _staging suffix and _histunion suffix)
         has_dedup: {boolean}             # true if deduplication required, false otherwise
         partition_columns: {columns}     # For deduplication (single: "column_name", multi: "col1,col2", none: null)
         mode: {mode}                     # inc or full; Default is inc

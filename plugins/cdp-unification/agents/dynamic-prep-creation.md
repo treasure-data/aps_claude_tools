@@ -93,6 +93,14 @@ create table if not exists ${client_short_name}_${stg}.${globals.unif_input_tbl}
   (
     source varchar
   )
+  ;
+
+
+create table if not exists ${client_short_name}_${lkup}.exclusion_list
+  (
+    key_name varchar,
+    key_value varchar
+  )  
 ;
 ```
 
