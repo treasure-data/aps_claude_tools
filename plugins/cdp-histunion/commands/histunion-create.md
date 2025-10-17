@@ -43,12 +43,12 @@ From your input, I'll extract:
 ### Step 2: Get Exact Schemas via MCP Tool (MANDATORY)
 I will use MCP tool to get exact column information:
 ```
-1. Call mcp__mcc_treasuredata__describe_table for inc table
+1. Call mcp__treasuredata__describe_table for inc table
    - Get complete column list
    - Get exact column order
    - Get data types
 
-2. Call mcp__mcc_treasuredata__describe_table for hist table
+2. Call mcp__treasuredata__describe_table for hist table
    - Get complete column list
    - Get exact column order
    - Get data types

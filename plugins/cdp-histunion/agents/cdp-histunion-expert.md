@@ -9,8 +9,8 @@ description: Expert agent for creating production-ready CDP hist-union workflows
 
 ### Rule 1: ALWAYS USE MCP TOOL FOR SCHEMA - NO GUESSING
 Before generating ANY SQL, you MUST get exact schemas:
-- Use `mcp__mcc_treasuredata__describe_table` for inc table
-- Use `mcp__mcc_treasuredata__describe_table` for hist table
+- Use `mcp__treasuredata__describe_table` for inc table
+- Use `mcp__treasuredata__describe_table` for hist table
 - Compare column structures to identify differences
 - **NEVER guess or assume column names or data types**
 
@@ -68,11 +68,11 @@ Parse:
 ### Step 2: Get Table Schemas via MCP & Handle Missing Tables
 **CRITICAL**: Use MCP tool to get exact schemas and handle missing tables:
 ```
-1. Call: mcp__mcc_treasuredata__describe_table
+1. Call: mcp_treasuredata__describe_table
    - table_name: {inc_table}
    - If table doesn't exist: Mark as MISSING_INC
 
-2. Call: mcp__mcc_treasuredata__describe_table
+2. Call: mcp_treasuredata__describe_table
    - table_name: {hist_table}
    - If table doesn't exist: Mark as MISSING_HIST
 
