@@ -28,6 +28,11 @@
       "name": "cdp-hybrid-idu",
       "source": "./plugins/cdp-hybrid-idu",
       "description": "Multi-platform ID Unification for Snowflake and Databricks with YAML-driven configuration, convergence detection, and master table generation"
+    },
+    {
+      "name": "cdp-orchestrator",
+      "source": "./plugins/cdp-orchestrator",
+      "description": "End-to-end CDP implementation orchestrator with automated workflow generation, deployment, execution, and monitoring. Orchestrates Ingestion → Hist-Union → Staging → Unification pipeline with TD Toolbelt integration"
     }
   ]
 }
