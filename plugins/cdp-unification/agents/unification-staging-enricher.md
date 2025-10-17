@@ -330,7 +330,7 @@ _export:
   !include : config/src_prep_params.yml
   !include : config/stage_enrich.yml
   td:
-    database: cdp_unification_${unif_name}
+    database: cdp_unification_${globals.unif_name}
 
 +enrich:
   _parallel: true
