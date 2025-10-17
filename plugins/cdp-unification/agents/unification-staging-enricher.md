@@ -289,7 +289,7 @@ from
 
     'select ' || chr(10) ||
       a.fields || ',' || chr(10) ||
-      'k0.persistent_id as ' || 'customer_360_persistent_id' || chr(10) ||
+      'k0.persistent_id as ' || '${globals.canonical_id}' || chr(10) ||
     'from ' || chr(10) ||
       -- a.database || '.' || a.tbl ||' p' || chr(10) ||
     ' exclusion_data p' || chr(10) ||
