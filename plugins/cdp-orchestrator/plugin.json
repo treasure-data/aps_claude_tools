@@ -6,6 +6,7 @@
     "name": "@cdp-tools-marketplace",
     "organization": "APS CDP Team"
   },
+  "prompt": "prompt.md",
   "agents": [
     "agents/cdp-pipeline-orchestrator.md"
   ],
@@ -31,6 +32,8 @@
     "workflows"
   ],
   "documentation": {
-    "readme": "commands/cdp-implement.md"
+    "readme": "README.md",
+    "prompt": "prompt.md",
+    "agent": "agents/cdp-pipeline-orchestrator.md"
   }
 }
