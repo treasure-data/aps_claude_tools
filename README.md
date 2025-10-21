@@ -29,6 +29,16 @@ The marketplace follows a modular architecture where each plugin handles a speci
 │                        APS CDP Tools Marketplace                        │
 └─────────────────────────────────────────────────────────────────────────┘
                                     │
+                                    ▼
+                      ┌──────────────────────────┐
+                      │   CDP ORCHESTRATOR       │
+                      │                          │
+                      │  End-to-End Automation   │
+                      │  • Generate → Deploy →   │
+                      │  • Execute → Monitor →   │
+                      │  • Validate              │
+                      └──────────────────────────┘
+                                    │
         ┌───────────────────────────┼───────────────────────────┐
         │                           │                           │
         ▼                           ▼                           ▼
@@ -119,34 +129,44 @@ aps_claude_tools/
 │   │   │   └── unify-create-config.md
 │   │   └── docs/
 │   │
-│   └── cdp-hybrid-idu/                  # Phase 4b: Hybrid ID Unification
+│   ├── cdp-hybrid-idu/                  # Phase 4b: Hybrid ID Unification
+│   │   ├── plugin.json
+│   │   ├── prompt.md
+│   │   ├── agents/
+│   │   │   ├── yaml-configuration-builder.md
+│   │   │   ├── hybrid-unif-keys-extractor.md
+│   │   │   ├── snowflake-sql-generator.md
+│   │   │   ├── snowflake-workflow-executor.md
+│   │   │   ├── databricks-sql-generator.md
+│   │   │   ├── databricks-workflow-executor.md
+│   │   │   └── merge-stats-report-generator.md
+│   │   ├── commands/
+│   │   │   ├── hybrid-setup.md
+│   │   │   ├── hybrid-unif-config-creator.md
+│   │   │   ├── hybrid-unif-config-validate.md
+│   │   │   ├── hybrid-generate-snowflake.md
+│   │   │   ├── hybrid-execute-snowflake.md
+│   │   │   ├── hybrid-generate-databricks.md
+│   │   │   ├── hybrid-execute-databricks.md
+│   │   │   └── hybrid-unif-merge-stats-creator.md
+│   │   ├── scripts/
+│   │   │   ├── snowflake/
+│   │   │   │   ├── yaml_unification_to_snowflake.py
+│   │   │   │   └── snowflake_sql_executor.py
+│   │   │   └── databricks/
+│   │   │       ├── yaml_unification_to_databricks.py
+│   │   │       └── databricks_sql_executor.py
+│   │   └── docs/
+│   │
+│   └── cdp-orchestrator/               # End-to-End Pipeline Automation
 │       ├── plugin.json
 │       ├── prompt.md
+│       ├── README.md                   # Comprehensive documentation
+│       ├── PLAN.md                     # Architecture planning docs
 │       ├── agents/
-│       │   ├── yaml-configuration-builder.md
-│       │   ├── hybrid-unif-keys-extractor.md
-│       │   ├── snowflake-sql-generator.md
-│       │   ├── snowflake-workflow-executor.md
-│       │   ├── databricks-sql-generator.md
-│       │   ├── databricks-workflow-executor.md
-│       │   └── merge-stats-report-generator.md
-│       ├── commands/
-│       │   ├── hybrid-setup.md
-│       │   ├── hybrid-unif-config-creator.md
-│       │   ├── hybrid-unif-config-validate.md
-│       │   ├── hybrid-generate-snowflake.md
-│       │   ├── hybrid-execute-snowflake.md
-│       │   ├── hybrid-generate-databricks.md
-│       │   ├── hybrid-execute-databricks.md
-│       │   └── hybrid-unif-merge-stats-creator.md
-│       ├── scripts/
-│       │   ├── snowflake/
-│       │   │   ├── yaml_unification_to_snowflake.py
-│       │   │   └── snowflake_sql_executor.py
-│       │   └── databricks/
-│       │       ├── yaml_unification_to_databricks.py
-│       │       └── databricks_sql_executor.py
-│       └── docs/
+│       │   └── cdp-pipeline-orchestrator.md
+│       └── commands/
+│           └── cdp-implement.md
 │
 └── README.md                            # This file
 ```
@@ -338,6 +358,130 @@ SELECT * FROM INDRESH_TEST.PUBLIC.td_id_master_table LIMIT 10;
 
 ---
 
+### 6. CDP Orchestrator (`cdp-orchestrator`)
+
+**Purpose**: End-to-end automation of the complete CDP implementation pipeline with automated workflow generation, deployment to Treasure Data, execution, real-time monitoring, and data validation across all 4 phases.
+
+**Key Features**:
+- **Fully Automated Execution**: Generates workflows → Deploys to TD → Executes → Monitors → Validates
+- **Sequential Phase Execution**: Enforces proper phase order with data dependency validation
+- **Real-Time Monitoring**: Polls workflow status every 30 seconds, shows elapsed time and progress
+- **Intelligent Error Handling**: Auto-fixes common deployment errors (syntax, missing databases), retries up to 3 times
+- **Data Validation**: Verifies tables created, row counts > 0, schema expectations met before proceeding
+- **Progress Tracking**: Uses TodoWrite to show real-time status updates for transparency
+- **TD Toolbelt Integration**: Direct integration with `td wf push`, `td wf start`, `td wf session` commands
+- **State Management**: Maintains `pipeline_state.json` for resume capability if interrupted
+- **Comprehensive Reporting**: Final report includes execution summary, session IDs, data quality metrics
+
+**Phase Orchestration Pattern**:
+```
+For Each Phase (Ingestion → Hist-Union → Staging → Unification):
+  [1] GENERATE → Invoke plugin slash command (/cdp-{plugin}:command)
+  [2] DEPLOY   → Execute: td wf push {project}
+  [3] EXECUTE  → Execute: td wf start {project} {workflow}
+  [4] MONITOR  → Poll: td wf session {session_id} (every 30s)
+  [5] VALIDATE → Query TD: Verify tables created with data
+  [6] PROCEED  → Only if validation passes
+
+CRITICAL: Each phase must complete successfully before next phase starts
+```
+
+**Slash Commands**:
+- `/cdp-orchestrator:cdp-implement` - Complete end-to-end CDP implementation pipeline
+
+**Prerequisites**:
+- TD Toolbelt installed (`td --version`)
+- TD API credentials (API key + endpoint)
+- Source system authentication (TD Auth ID)
+- Write permissions to TD (create databases, tables, workflows)
+
+**Input Requirements**:
+
+**Global Configuration**:
+- TD_API_KEY - Treasure Data API key from console
+- TD_ENDPOINT - Regional endpoint (US/EU/Tokyo/Asia Pacific)
+- Client name - Identifier for database naming
+
+**Phase 1 (Ingestion)**:
+- Source name, connector type, objects/tables
+- Ingestion mode (incremental/historical/both)
+- Incremental field, start date
+- Authentication ID
+
+**Phase 2 (Hist-Union)**:
+- Tables from Phase 1 output (auto-detected or user-provided)
+
+**Phase 3 (Staging)**:
+- SQL engine (Presto/Hive)
+- Tables from Phase 2 (auto-detected)
+
+**Phase 4 (Unification)**:
+- Unification name, ID method (persistent_id/canonical_id)
+- Update strategy (incremental/full)
+- Tables from Phase 3 (auto-detected)
+
+**Output**:
+- **50-70 generated files** across all phases (.dig, .yml, .sql)
+- **4 deployed TD projects** (ingestion, hist_union, staging, unification)
+- **Session IDs** for all workflow executions
+- **Pipeline state file** (pipeline_state.json)
+- **Comprehensive final report** (pipeline_report.md)
+- **Execution logs** (pipeline_logs/{date}/)
+
+**Timeline**: 3-4 hours total (depending on data volume)
+- Phase 1 (Ingestion): ~1 hour
+- Phase 2 (Hist-Union): ~30 minutes
+- Phase 3 (Staging): ~45 minutes
+- Phase 4 (Unification): ~1.5 hours
+
+**Error Handling**:
+- **Deployment Errors**: Auto-fixes syntax errors, prompts for missing databases/secrets
+- **Execution Errors**: Retrieves logs, shows error details, offers retry/fix/skip/abort options
+- **Validation Errors**: Shows missing tables/data, asks user decision before proceeding
+- **Timeout Handling**: Alerts after 2 hours, offers continue/check/abort options
+
+**Use Cases**:
+- First-time CDP implementation (complete setup from scratch)
+- Multi-source ingestion with automated processing
+- Automated testing of CDP pipelines
+- Standardized deployment across environments (dev/staging/prod)
+
+**Example Workflow**:
+```bash
+# Single command for complete CDP implementation
+/cdp-orchestrator:cdp-implement
+
+# Orchestrator will prompt for:
+# 1. Global config (API key, endpoint, client name)
+# 2. Phase 1 config (Snowflake: tables, auth, dates)
+# 3. Phase 2 config (tables to combine)
+# 4. Phase 3 config (SQL engine: presto)
+# 5. Phase 4 config (unification name, ID method)
+
+# Then automatically:
+# - Generates all 50+ workflow files
+# - Deploys all 4 projects to TD
+# - Executes workflows in sequence
+# - Monitors real-time progress
+# - Validates data between phases
+# - Generates final report
+
+# Result: Complete CDP implementation ready for production
+```
+
+**Integration with Other Plugins**:
+The orchestrator internally invokes:
+- `/cdp-ingestion:ingest-new` for Phase 1
+- `/cdp-histunion:histunion-batch` for Phase 2
+- `/cdp-staging:transform-batch` for Phase 3
+- `/cdp-unification:unify-setup` for Phase 4
+
+Users can still run individual plugins manually for granular control.
+
+**Documentation**: See `plugins/cdp-orchestrator/README.md` for complete prerequisites, configuration guide, troubleshooting, and examples.
+
+---
+
 ## CDP Implementation Flow
 
 ### End-to-End Pipeline
@@ -425,11 +569,66 @@ SELECT * FROM INDRESH_TEST.PUBLIC.td_id_master_table LIMIT 10;
    /plugin install cdp-histunion
    /plugin install cdp-unification
    /plugin install cdp-hybrid-idu
+   /plugin install cdp-orchestrator
    ```
 
 3. **Restart Claude Code** to load plugins
 
+4. **Verify installation**:
+   ```bash
+   # Check all plugins loaded
+   /plugin list
+
+   # Should show:
+   # - cdp-ingestion
+   # - cdp-histunion
+   # - cdp-staging
+   # - cdp-unification
+   # - cdp-hybrid-idu
+   # - cdp-orchestrator
+   ```
+
 ### Typical Implementation Workflow
+
+#### Option A: Automated End-to-End Implementation (Recommended)
+
+Use the **CDP Orchestrator** for fully automated pipeline execution:
+
+```bash
+# Single command for complete CDP implementation
+/cdp-orchestrator:cdp-implement
+
+# The orchestrator will:
+# 1. Collect all configuration upfront
+# 2. Show complete execution plan
+# 3. Execute all 4 phases automatically
+# 4. Monitor progress in real-time
+# 5. Validate data between phases
+# 6. Generate comprehensive final report
+
+# Timeline: 3-4 hours (automatic)
+```
+
+**When to use**:
+- First-time CDP implementation
+- Clean setup from scratch
+- Want automated execution with monitoring
+- Need deployment to Treasure Data
+- Require data validation between phases
+
+**Prerequisites**:
+- TD Toolbelt installed (`td --version`)
+- TD API credentials ready
+- Source system credentials configured
+- Write permissions to TD
+
+See `plugins/cdp-orchestrator/README.md` for complete guide.
+
+---
+
+#### Option B: Manual Phase-by-Phase Execution
+
+Use individual plugin commands for granular control:
 
 #### Step 1: Set Up Data Ingestion
 
@@ -789,7 +988,36 @@ Code generated by these plugins:
 
 ## Version History
 
-### v1.6.0 (2025-10-15) - Major Update
+### v1.7.0 - Major Release: CDP Orchestrator
+**NEW PLUGIN: CDP Orchestrator (`cdp-orchestrator`)**:
+- ✅ **End-to-End Pipeline Automation**: Complete CDP implementation from ingestion to unification
+- ✅ **Slash Command**: `/cdp-orchestrator:cdp-implement` - Single command for full pipeline
+- ✅ **6-Step Phase Pattern**: Generate → Deploy → Execute → Monitor → Validate → Proceed
+- ✅ **TD Toolbelt Integration**: Automated deployment via `td wf push/start/session`
+- ✅ **Real-Time Monitoring**: Polls workflow status every 30 seconds, shows elapsed time
+- ✅ **Intelligent Error Handling**: Auto-fixes syntax errors, retries up to 3 times
+- ✅ **Data Validation**: Verifies tables created, row counts > 0 between phases
+- ✅ **Progress Tracking**: Uses TodoWrite for transparent real-time status
+- ✅ **State Management**: Maintains `pipeline_state.json` for resume capability
+- ✅ **Comprehensive Reporting**: Final report with session IDs, data quality metrics
+- ✅ **50-70 Files Generated**: Complete workflows across all 4 phases
+- ✅ **Timeline**: 3-4 hours total for complete automated execution
+
+**Documentation**:
+- 1,718-line comprehensive README (`plugins/cdp-orchestrator/README.md`)
+- Complete prerequisites guide (system, TD, data source, project setup)
+- Input requirements documentation for all 4 phases
+- Step-by-step usage guide with examples
+- Monitoring and troubleshooting guide
+- FAQ with 15+ questions answered
+
+**Use Cases**:
+- First-time CDP implementation (scratch to production)
+- Automated testing of CDP pipelines
+- Standardized deployment across environments
+- Multi-source ingestion with end-to-end processing
+
+### v1.6.0 - Major Update
 **CDP Hybrid IDU Enhancements**:
 - ✅ **New Command**: `hybrid-unif-config-creator` - Auto-generate `unify.yml` from live table analysis
   - Uses MCP tools to analyze Snowflake/Databricks tables
@@ -816,30 +1044,30 @@ Code generated by these plugins:
 - Dynamic column detection for flexible master table structures
 - Null-safe calculations (NULLIF protection on all divisions)
 
-### v1.5.0 (2025-10-13)
+### v1.5.0
 - Added `cdp-hybrid-idu` plugin for Snowflake and Databricks
 - Cross-platform ID unification with convergence detection
 - YAML-driven configuration for both platforms
 
-### v1.4.0 (2024-10-13)
+### v1.4.0
 - Added `cdp-histunion` plugin
 - Historical and incremental data consolidation
 - Watermark-based incremental loading
 
-### v1.3.0 (2024-10-13)
+### v1.3.0
 - Added `cdp-unification` plugin
 - Customer identity resolution for Treasure Data
 - ID graph and master record creation
 
-### v1.2.0 (2024-10-13)
+### v1.2.0
 - Added `cdp-staging` plugin with Hive support
 - Data transformation and quality improvement
 - PII handling and JSON extraction
 
-### v1.1.0 (2024-10-10)
+### v1.1.0
 - Added `cdp-staging` plugin (Presto only)
 
-### v1.0.0 (2024-10-10)
+### v1.0.0
 - Initial release with `cdp-ingestion` plugin
 - Support for BigQuery, Klaviyo, Shopify, OneTrust, Pinterest, SFTP
 
