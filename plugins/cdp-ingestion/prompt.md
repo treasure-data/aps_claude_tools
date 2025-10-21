@@ -143,7 +143,7 @@ Ensure all required sections from template are present:
 | **New source (single object)** | 1. `ingestion/{source}_ingest_inc.dig`<br>2. `ingestion/config/{source}_datasources.yml`<br>3. `ingestion/config/{source}_{object}_load.yml` | Write × 3 |
 | **New source (multiple objects)** | 1. `ingestion/{source}_ingest_inc.dig`<br>2. `ingestion/config/{source}_datasources.yml`<br>3. `ingestion/config/{source}_{object1}_load.yml`<br>4. `ingestion/config/{source}_{object2}_load.yml`<br>... | Write × (2 + N objects) |
 | **Add object to existing source** | 1. `ingestion/config/{source}_{new_object}_load.yml`<br>2. Updated `ingestion/{source}_ingest_inc.dig` | Read, Write × 2 |
-| **Historical + Incremental** | 1. `ingestion/{source}_ingest_hist.dig`<br>2. `ingestion/{source}_ingest_inc.dig`<br>3. `ingestion/config/{source}_datasources.yml`<br>4. `ingestion/config/{source}_{object}_load.yml` | Write × 4 (minimum) |
+| **Historical + Incremental** | 1. `ingestion/{source}_ingest_hist.dig`<br>2. `ingestion/{source}_ingest_inc.dig`<br>3. `ingestion/config/{source}_datasources.yml`<br>4. `ingestion/config/{source}_{object}_load.yml`<br>5. `ingestion/config/hist_date_ranges.yml` | Write × 5 (minimum) |
 
 ### Why Batch Generation is Mandatory:
 - ✅ User gets complete working solution immediately

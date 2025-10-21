@@ -213,8 +213,7 @@ For historical data processing with skip logic:
     +load_monthly_batches:
       for_each>:
         date_range: ${date_ranges}
-      _parallel:
-        limit: 3
+      _parallel: true
       _do:
         +check_batch_status:
           td>:
