@@ -102,16 +102,16 @@ description: Validate all ID unification files against exact templates before de
       FIX: Update line 23 to use col.name from src_prep_params.yml
 
 [3/5] Database & Table Existence
-  ✅ ik_claude_src exists
-  ✅ ik_claude_stg exists
-  ✅ ik_claude_gld exists
-  ✅ ik_claude_references exists
-  ❌ ik_claude_references.exclusion_list does NOT exist
-      FIX: Run: td query -d ik_claude_references -t presto -w "CREATE TABLE IF NOT EXISTS exclusion_list (key_value VARCHAR, key_name VARCHAR, tbls ARRAY(VARCHAR), note VARCHAR)"
+  ✅ client_src exists
+  ✅ client_stg exists
+  ✅ client_gld exists
+  ✅ client_config exists
+  ❌ client_config.exclusion_list does NOT exist
+      FIX: Run: td query -d client_config -t presto -w "CREATE TABLE IF NOT EXISTS exclusion_list (key_value VARCHAR, key_name VARCHAR, tbls ARRAY(VARCHAR), note VARCHAR)"
 
 [4/5] Configuration Validation
   ✅ All variables defined in environment.yml
-  ✅ Source table ik_claude_stg.snowflake_orders exists
+  ✅ Source table client_stg.snowflake_orders exists
   ✅ All columns exist in source table
   ✅ unify.yml keys match src_prep_params.yml
 
@@ -132,7 +132,7 @@ Failed: 2 ❌
 
 Required Actions:
 1. Fix stage_enrich.yml line 23 mapping
-2. Create ik_claude_references.exclusion_list table
+2. Create client_config.exclusion_list table
 
 Re-run validation after fixes: /cdp-unification:unify-validate
 ```

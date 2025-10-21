@@ -76,14 +76,14 @@ Always suggest sensible defaults in parentheses.
 ## PLUGIN 4: CDP-Unification
 
 ### Required Parameters
-1. **client_short_name** - Client identifier (e.g., `ik_claude`, `mck`)
+1. **client_short_name** - Client identifier (e.g., `client`, `mck`)
 2. **name** - Unification name (e.g., `customer_360`)
 3. **id_method** - `persistent_id` or `canonical_id`
 4. **update_strategy** - `incremental` or `full`
 5. **tables** - Comma-separated staging tables
 6. **regional_endpoint** - TD API endpoint
-7. **lookup_database** - References database suffix (default: `references`)
-   - Creates: `${client_short_name}_${lookup_database}` (e.g., `ik_claude_references`)
+7. **lookup_database** - Config database suffix (default: `config`)
+   - Creates: `${client_short_name}_${lookup_database}` (e.g., `client_config`)
    - **MUST CREATE** this database before workflow execution
 
 ---
