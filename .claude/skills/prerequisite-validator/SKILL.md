@@ -61,7 +61,7 @@ Automatically trigger when user mentions or requests:
      This will build your databases as:
      - Source: {client}_src
      - Staging: {client}_stg
-     - Config: config_db (shared)
+     - Config: client_config (shared)
      ```
    - Wait for user response
    - Validate provided client name (alphanumeric, underscores only)
@@ -176,7 +176,7 @@ Provide clear, structured validation report:
 - Client name: acme
 - Source database: acme_src (exists ✅)
 - Staging database: acme_stg (exists ✅)
-- Config database: config_db (exists ✅)
+- Config database: client_config (exists ✅)
 
 ### ✅ Database Connectivity
 - Connection: PASS

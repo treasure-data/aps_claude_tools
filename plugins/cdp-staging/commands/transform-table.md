@@ -21,7 +21,7 @@ Please provide the following details:
 
 ### 2. Target Configuration
 - **Staging Database**: Target database (default: `client_stg`)
-- **Lookup Database**: Reference database for rules (default: `config_db`)
+- **Lookup Database**: Reference database for rules (default: `client_config`)
 
 ### 3. SQL Engine (Optional)
 - **Engine**: Choose one:
@@ -30,7 +30,7 @@ Please provide the following details:
   - If not specified, will default to Presto/Trino
 
 ### 4. Transformation Requirements (Optional)
-- **Deduplication**: Required? (will check config_db.staging_trnsfrm_rules)
+- **Deduplication**: Required? (will check client_config.staging_trnsfrm_rules)
 - **JSON Columns**: Will auto-detect and process
 - **Join Logic**: Any joins needed? (will check additional_rules)
 
@@ -133,7 +133,7 @@ User: Transform table client_src.klaviyo_events_histunion using Hive
 ```
 User: Transform demo_db.orders_histunion
       Use demo_db_stg as staging database
-      Use config_db for lookup
+      Use client_config for lookup
 → Engine: Presto (default)
 → Custom databases applied
 ```
@@ -163,7 +163,7 @@ User: Transform demo_db.orders_histunion
 
 4. **Monitor execution**:
    ```sql
-   SELECT * FROM config_db.inc_log
+   SELECT * FROM client_config.inc_log
    WHERE table_name = '{your_table}'
    ORDER BY inc_value DESC
    LIMIT 1

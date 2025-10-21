@@ -41,7 +41,7 @@ SELECT
   time
 FROM client_src.klaviyo_campaigns_hist
 WHERE time > COALESCE(
-  (SELECT MAX(inc_value) FROM config_db.inc_log
+  (SELECT MAX(inc_value) FROM client_config.inc_log
    WHERE table_name = 'klaviyo_campaigns_hist' AND project_name = 'hist_union'),
   0
 )
@@ -58,18 +58,18 @@ SELECT
   time
 FROM client_src.klaviyo_campaigns
 WHERE time > COALESCE(
-  (SELECT MAX(inc_value) FROM config_db.inc_log
+  (SELECT MAX(inc_value) FROM client_config.inc_log
    WHERE table_name = 'klaviyo_campaigns' AND project_name = 'hist_union'),
   0
 );
 
 -- Update watermark for historical table
-INSERT INTO config_db.inc_log
+INSERT INTO client_config.inc_log
 SELECT 'klaviyo_campaigns_hist' table_name, 'hist_union' project_name, MAX(time) inc_value
 FROM client_src.klaviyo_campaigns_hist;
 
 -- Update watermark for incremental table
-INSERT INTO config_db.inc_log
+INSERT INTO client_config.inc_log
 SELECT 'klaviyo_campaigns' table_name, 'hist_union' project_name, MAX(time) inc_value
 FROM client_src.klaviyo_campaigns;
 ```
@@ -115,7 +115,7 @@ SELECT
   time
 FROM client_src.klaviyo_events_hist
 WHERE time > COALESCE(
-  (SELECT MAX(inc_value) FROM config_db.inc_log
+  (SELECT MAX(inc_value) FROM client_config.inc_log
    WHERE table_name = 'klaviyo_events_hist' AND project_name = 'hist_union'),
   0
 )
@@ -133,18 +133,18 @@ SELECT
   time
 FROM client_src.klaviyo_events
 WHERE time > COALESCE(
-  (SELECT MAX(inc_value) FROM config_db.inc_log
+  (SELECT MAX(inc_value) FROM client_config.inc_log
    WHERE table_name = 'klaviyo_events' AND project_name = 'hist_union'),
   0
 );
 
 -- Update watermark for historical table
-INSERT INTO config_db.inc_log
+INSERT INTO client_config.inc_log
 SELECT 'klaviyo_events_hist' table_name, 'hist_union' project_name, MAX(time) inc_value
 FROM client_src.klaviyo_events_hist;
 
 -- Update watermark for incremental table
-INSERT INTO config_db.inc_log
+INSERT INTO client_config.inc_log
 SELECT 'klaviyo_events' table_name, 'hist_union' project_name, MAX(time) inc_value
 FROM client_src.klaviyo_events;
 ```
@@ -203,12 +203,12 @@ SELECT
 FROM client_src.klaviyo_lists;
 
 -- Update watermark for historical table
-INSERT INTO config_db.inc_log
+INSERT INTO client_config.inc_log
 SELECT 'klaviyo_lists_hist' table_name, 'hist_union' project_name, MAX(time) inc_value
 FROM client_src.klaviyo_lists_hist;
 
 -- Update watermark for incremental table
-INSERT INTO config_db.inc_log
+INSERT INTO client_config.inc_log
 SELECT 'klaviyo_lists' table_name, 'hist_union' project_name, MAX(time) inc_value
 FROM client_src.klaviyo_lists;
 ```
@@ -236,7 +236,7 @@ timezone: UTC
 _export:
   td:
     database: client_src
-  lkup_db: config_db
+  lkup_db: client_config
 
 +create_inc_log_table:
   td>:
@@ -312,7 +312,7 @@ SELECT
   time
 FROM client_src.product_catalog_hist
 WHERE time > COALESCE(
-  (SELECT MAX(inc_value) FROM config_db.inc_log
+  (SELECT MAX(inc_value) FROM client_config.inc_log
    WHERE table_name = 'product_catalog_hist' AND project_name = 'hist_union'),
   0
 )
@@ -329,17 +329,17 @@ SELECT
   time
 FROM client_src.product_catalog
 WHERE time > COALESCE(
-  (SELECT MAX(inc_value) FROM config_db.inc_log
+  (SELECT MAX(inc_value) FROM client_config.inc_log
    WHERE table_name = 'product_catalog' AND project_name = 'hist_union'),
   0
 );
 
 -- Update watermarks
-INSERT INTO config_db.inc_log
+INSERT INTO client_config.inc_log
 SELECT 'product_catalog_hist' table_name, 'hist_union' project_name, MAX(time) inc_value
 FROM client_src.product_catalog_hist;
 
-INSERT INTO config_db.inc_log
+INSERT INTO client_config.inc_log
 SELECT 'product_catalog' table_name, 'hist_union' project_name, MAX(time) inc_value
 FROM client_src.product_catalog;
 ```
@@ -351,7 +351,7 @@ FROM client_src.product_catalog;
 ## Example 6: Custom Lookup Database
 
 ### Scenario
-Use a custom database for inc_log watermark tracking instead of default config_db.
+Use a custom database for inc_log watermark tracking instead of default client_config.
 
 ### Input
 ```
@@ -386,7 +386,7 @@ _export:
 
 ### Generated SQL
 ```sql
--- Uses mc_config.inc_log instead of config_db.inc_log
+-- Uses mc_config.inc_log instead of client_config.inc_log
 WHERE time > COALESCE(
   (SELECT MAX(inc_value) FROM mc_config.inc_log
    WHERE table_name = 'users_hist' AND project_name = 'hist_union'),
@@ -405,7 +405,7 @@ SELECT
   project_name,
   inc_value,
   FROM_UNIXTIME(inc_value) as last_update_time
-FROM config_db.inc_log
+FROM client_config.inc_log
 WHERE project_name = 'hist_union'
 ORDER BY table_name;
 ```
@@ -503,7 +503,7 @@ Issue: Same data processed repeatedly
 ```sql
 -- Create index on inc_log for faster lookups
 CREATE INDEX IF NOT EXISTS idx_inc_log_lookup
-ON config_db.inc_log (table_name, project_name);
+ON client_config.inc_log (table_name, project_name);
 ```
 
 ### Tip 3: Partition Large Tables

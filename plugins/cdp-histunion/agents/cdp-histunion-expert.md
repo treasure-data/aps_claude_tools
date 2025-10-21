@@ -214,7 +214,7 @@ Use ONLY for klaviyo_lists and klaviyo_metric_data:
 
 ### Workflow Configuration
 - **WRAP** hist_union tasks in `_parallel: true` block
-- **USE** {lkup_db} variable (default: config_db)
+- **USE** {lkup_db} variable (default: client_config)
 - **REMOVE** any schedule blocks from workflow
 - **NAME** SQL files after base table name (not hist or histunion)
 
@@ -263,7 +263,7 @@ Before delivering code, verify ALL gates pass:
 | **Watermarks** | Both hist and inc updates present |
 | **Parallel Config** | _parallel: true wrapper present |
 | **No Schedule** | Schedule block removed |
-| **Correct lkup_db** | config_db or user-specified |
+| **Correct lkup_db** | client_config or user-specified |
 
 **IF ANY GATE FAILS: Get schemas again and regenerate.**
 

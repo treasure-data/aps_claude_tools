@@ -23,7 +23,7 @@ You can provide table names in any of these formats:
 
 ### 2. Lookup Database (Optional)
 - **Lookup/Config Database**: Database for inc_log watermark table
-- **Default**: `config_db` (will be used if not specified)
+- **Default**: `client_config` (will be used if not specified)
 
 ---
 
@@ -138,7 +138,7 @@ Before delivering, I will verify:
 ✅ Watermark updates present for both hist and inc tables
 ✅ _parallel: true configured for concurrent execution
 ✅ No schedule block in workflow file
-✅ Correct lkup_db set (config_db or user-specified)
+✅ Correct lkup_db set (client_config or user-specified)
 ```
 
 ---
@@ -294,7 +294,7 @@ I will derive:
 - Inc: client_src.shopify_products
 - Hist: client_src.shopify_products_hist
 - Target: client_src.shopify_products_histunion
-- Lookup DB: config_db (default)
+- Lookup DB: client_config (default)
 ```
 
 ### Example 2: Hist Table Name
@@ -305,7 +305,7 @@ I will derive:
 - Inc: client_src.klaviyo_events
 - Hist: client_src.klaviyo_events_hist
 - Target: client_src.klaviyo_events_histunion
-- Lookup DB: config_db (default)
+- Lookup DB: client_config (default)
 ```
 
 ### Example 3: Custom Lookup DB

@@ -27,7 +27,7 @@ all_databases = mcp__demo_treasuredata__list_databases()
 
 # Example response:
 # {
-#   "databases": ["acme_src", "acme_stg", "nike_src", "config_db", ...]
+#   "databases": ["acme_src", "acme_stg", "nike_src", "client_config", ...]
 # }
 
 # Validate client databases exist
@@ -35,7 +35,7 @@ client = "acme"  # extracted from user input
 expected_databases = {
     "source": f"{client}_src",      # acme_src
     "staging": f"{client}_stg",     # acme_stg
-    "config": "config_db"           # shared
+    "config": "client_config"           # shared
 }
 
 validation_results = {}
@@ -57,7 +57,7 @@ for db_type, info in validation_results.items():
 ```
 ✅ acme_src exists
 ✅ acme_stg exists
-✅ config_db exists
+✅ client_config exists
 ```
 
 ### Query 0.2: Count Tables in Client Databases
@@ -142,7 +142,7 @@ def extract_client_from_database(database_name):
         acme_src → "acme"
         nike_stg → "nike"
         walmart_staging → "walmart"
-        config_db → "config_db" (no prefix)
+        client_config → "client_config" (no prefix)
     """
     # Define known suffixes
     suffixes = [
@@ -176,7 +176,7 @@ test_databases = [
     "acme_src",
     "nike_stg",
     "walmart_staging",
-    "config_db"
+    "client_config"
 ]
 
 for db in test_databases:
@@ -189,7 +189,7 @@ for db in test_databases:
 acme_src → client: 'acme', suffix: '_src'
 nike_stg → client: 'nike', suffix: '_stg'
 walmart_staging → client: 'walmart', suffix: '_staging'
-config_db → client: 'config_db', suffix: 'None'
+client_config → client: 'client_config', suffix: 'None'
 ```
 
 ### Query 0.5: Validate Client Name Format (Python Logic)
@@ -319,7 +319,7 @@ def validate_client_configuration(user_input):
     expected_dbs = {
         "source": f"{client}_src",
         "staging": f"{client}_stg",
-        "config": "config_db"
+        "config": "client_config"
     }
 
     db_status = {}

@@ -105,7 +105,7 @@ client_stg = f"{client}_stg"
 results = {
     "source_db": client_src in all_databases,
     "staging_db": client_stg in all_databases,
-    "config_db": "config_db" in all_databases
+    "client_config": "client_config" in all_databases
 }
 ```
 
@@ -137,7 +137,7 @@ _________________________________________________
 Once provided, I'll verify these databases exist:
 - {client}_src (source data)
 - {client}_stg (staging/transformed data)
-- config_db (shared configuration)
+- client_config (shared configuration)
 ```
 
 **Success Output**:
@@ -148,7 +148,7 @@ Once provided, I'll verify these databases exist:
 - Client name: acme
 - Source database: acme_src ✅ (exists, 45 tables)
 - Staging database: acme_stg ✅ (exists, 23 tables)
-- Config database: config_db ✅ (shared, exists)
+- Config database: client_config ✅ (shared, exists)
 
 **Ready to proceed** with workflow generation using these databases.
 ```
@@ -186,7 +186,7 @@ Client name/prefix: _______________
 This will build databases as:
 - Source: {client}_src
 - Staging: {client}_stg
-- Config: config_db (shared)
+- Config: client_config (shared)
 
 **Option 2: Provide Custom Database Names**
 If you use different naming conventions:
@@ -255,7 +255,7 @@ validated_config = {
     "client_name": "acme",
     "source_db": "acme_src",
     "staging_db": "acme_stg",
-    "config_db": "config_db",
+    "client_config": "client_config",
     "databases_exist": True
 }
 

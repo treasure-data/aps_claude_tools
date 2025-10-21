@@ -58,7 +58,7 @@ Always suggest sensible defaults in parentheses.
 
 ### Required Parameters
 1. **table_name** - Base table (e.g., `client_src.klaviyo_events`)
-2. **lookup_database** - Watermark DB (default: `config_db`)
+2. **lookup_database** - Watermark DB (default: `client_config`)
 
 ---
 
@@ -68,7 +68,7 @@ Always suggest sensible defaults in parentheses.
 1. **table_list** - Comma-separated tables
 2. **source_database** - Source DB (e.g., `client_src`)
 3. **staging_database** - Target DB (default: `client_stg`)
-4. **lookup_database** - Reference DB (default: `config_db`)
+4. **lookup_database** - Reference DB (default: `client_config`)
 5. **sql_engine** - `presto` (default) or `hive`
 
 ---

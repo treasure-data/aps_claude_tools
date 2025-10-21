@@ -23,7 +23,7 @@ Please provide the following details:
 ### 2. Source Configuration
 - **Source Database**: Database containing tables (e.g., `client_src`)
 - **Staging Database**: Target database (default: `client_stg`)
-- **Lookup Database**: Reference database for rules (default: `config_db`)
+- **Lookup Database**: Reference database for rules (default: `client_config`)
 
 ### 3. SQL Engine (Optional)
 - **Engine**: Choose one:
@@ -255,7 +255,7 @@ If all tables fail:
 4. **Monitor All Tables**:
    ```sql
    SELECT table_name, inc_value, project_name
-   FROM config_db.inc_log
+   FROM client_config.inc_log
    WHERE table_name IN ('table1', 'table2', 'table3')
    ORDER BY inc_value DESC
    ```

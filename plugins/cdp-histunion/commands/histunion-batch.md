@@ -42,7 +42,7 @@ client_src.klaviyo_events, client_src.shopify_products_hist, client_src.onetrust
 
 ### 2. Lookup Database (Optional)
 - **Lookup/Config Database**: Database for inc_log watermark table
-- **Default**: `config_db` (will be used if not specified)
+- **Default**: `client_config` (will be used if not specified)
 
 ---
 

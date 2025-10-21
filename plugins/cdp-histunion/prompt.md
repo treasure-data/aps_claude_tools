@@ -53,7 +53,7 @@ This plugin creates production-ready hist-union workflows to combine historical 
 - **Incremental table name** (e.g., `mc_src.klaviyo_events`)
 - **Historical table name** (e.g., `mc_src.klaviyo_events_hist`)
 - **Target histunion table name** (e.g., `mc_src.klaviyo_events_histunion`)
-- **Optional**: Lookup/config database name (defaults to `config_db` if not specified)
+- **Optional**: Lookup/config database name (defaults to `client_config` if not specified)
 
 ---
 
@@ -293,8 +293,8 @@ _export:
 13. **ALWAYS** update watermarks for both hist and inc tables (even FULL LOAD)
 14. **ALWAYS** use project_name = 'hist_union' in inc_log entries
 15. **ALWAYS** wrap hist_union tasks with `_parallel: true` for concurrent execution
-16. **CRITICAL**: **ALWAYS** use `config_db` as default lookup database (lkup_db) unless user specifies different
-17. **MANDATORY**: Auto-set lkup_db to `config_db` if user doesn't specify
+16. **CRITICAL**: **ALWAYS** use `client_config` as default lookup database (lkup_db) unless user specifies different
+17. **MANDATORY**: Auto-set lkup_db to `client_config` if user doesn't specify
 18. **SQL SYNTAX**: For Presto/Trino compatibility:
     - Use double quotes `"column_name"` for reserved keywords (like "index")
     - NEVER use backticks `` `column_name` `` (not supported)
@@ -352,7 +352,7 @@ project_root/
 7. ✅ **Watermarks included**: Both hist and inc table watermark updates present
 8. ✅ **Parallel execution**: _parallel: true wrapper present in workflow
 9. ✅ **No schedule block**: Schedule removed from workflow
-10. ✅ **Correct lkup_db**: Set to config_db or user-specified value
+10. ✅ **Correct lkup_db**: Set to client_config or user-specified value
 
 ---
 

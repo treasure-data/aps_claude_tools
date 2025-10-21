@@ -114,7 +114,7 @@ When receiving transformation requests for `{input_db}.{input_table}`:
 
 4. **PROCESSING CONTINUATION** (only if table exists):
    - **Set Variables**: `source_database = input_db` and `source_table = input_table` and
-        if user doesn't specifies. set `lkup_db = config_db` and set `staging_databse = client_stg` by default.
+        if user doesn't specifies. set `lkup_db = client_config` and set `staging_databse = client_stg` by default.
    - **Config Query**: Always use this EXACT SQL for additional rules:
      ```sql
      SELECT db_name, table_name, partition_columns, order_by_columns, additional_rules
