@@ -74,8 +74,8 @@ Transform a single table from histunion to staging format.
 ```
 
 **Prompts for:**
-- Source database and table (e.g., `mck_src.klaviyo_events_histunion`)
-- Target database (e.g., `mck_staging`)
+- Source database and table (e.g., `client_src.klaviyo_events_histunion`)
+- Target database (e.g., `client_staging`)
 - SQL Engine (Presto or Hive)
 - Deduplication strategy
 - PII handling preferences
@@ -88,7 +88,7 @@ Transform a single table from histunion to staging format.
 ```sql
 -- File: staging/queries/klaviyo_events_staging.sql
 
-INSERT OVERWRITE TABLE mck_staging.klaviyo_events_staging
+INSERT OVERWRITE TABLE client_staging.klaviyo_events_staging
 SELECT
     -- ID fields
     TRIM(event_id) AS event_id,
@@ -109,11 +109,11 @@ SELECT
     time AS td_time,
     CURRENT_TIMESTAMP AS processed_at
 
-FROM mck_src.klaviyo_events_histunion
+FROM client_src.klaviyo_events_histunion
 
 WHERE time > (
     SELECT COALESCE(MAX(td_time), 0)
-    FROM mck_staging.klaviyo_events_staging
+    FROM client_staging.klaviyo_events_staging
 )
 
 -- Deduplication
@@ -144,10 +144,10 @@ Transform multiple tables in parallel for maximum efficiency.
 **Example Input:**
 ```
 Tables to transform:
-mck_src.klaviyo_events_histunion
-mck_src.klaviyo_profiles_histunion
-mck_src.shopify_orders_histunion
-mck_src.shopify_products_histunion
+client_src.klaviyo_events_histunion
+client_src.klaviyo_profiles_histunion
+client_src.shopify_orders_histunion
+client_src.shopify_products_histunion
 ```
 
 **Generates:**
@@ -164,19 +164,19 @@ _parallel: true
 
 +transform_klaviyo_events:
   td>: staging/queries/klaviyo_events_staging.sql
-  database: mck_staging
+  database: client_staging
 
 +transform_klaviyo_profiles:
   td>: staging/queries/klaviyo_profiles_staging.sql
-  database: mck_staging
+  database: client_staging
 
 +transform_shopify_orders:
   td>: staging/queries/shopify_orders_staging.sql
-  database: mck_staging
+  database: client_staging
 
 +transform_shopify_products:
   td>: staging/queries/shopify_products_staging.sql
-  database: mck_staging
+  database: client_staging
 ```
 
 ---
@@ -339,7 +339,7 @@ FROM customer_profiles
 ### Pattern 5: Incremental Load
 
 ```sql
-INSERT INTO mck_staging.orders_staging
+INSERT INTO client_staging.orders_staging
 SELECT
     order_id,
     customer_id,
@@ -348,11 +348,11 @@ SELECT
     time AS td_time,
     CURRENT_TIMESTAMP AS processed_at
 
-FROM mck_src.orders_histunion
+FROM client_src.orders_histunion
 
 WHERE time > (
     SELECT COALESCE(MAX(td_time), 0)
-    FROM mck_staging.orders_staging
+    FROM client_staging.orders_staging
 )
 
 -- Deduplicate within this batch
@@ -489,14 +489,14 @@ FROM events
 ```
 
 **Input:**
-- Source: `mck_src.klaviyo_events_histunion`
-- Target DB: `mck_staging`
+- Source: `client_src.klaviyo_events_histunion`
+- Target DB: `client_staging`
 - Engine: Presto
 - Dedup: By event_id, keep latest
 
 **Generated SQL:**
 ```sql
-INSERT INTO mck_staging.klaviyo_events_staging
+INSERT INTO client_staging.klaviyo_events_staging
 SELECT
     TRIM(event_id) AS event_id,
     TRIM(profile_id) AS profile_id,
@@ -515,11 +515,11 @@ SELECT
     time AS td_time,
     CURRENT_TIMESTAMP AS processed_at
 
-FROM mck_src.klaviyo_events_histunion
+FROM client_src.klaviyo_events_histunion
 
 WHERE time > (
     SELECT COALESCE(MAX(td_time), 0)
-    FROM mck_staging.klaviyo_events_staging
+    FROM client_staging.klaviyo_events_staging
 )
 
 QUALIFY ROW_NUMBER() OVER (
@@ -539,9 +539,9 @@ QUALIFY ROW_NUMBER() OVER (
 **Input:**
 ```
 Tables:
-mck_src.customer_profiles_histunion
-mck_src.customer_orders_histunion
-mck_src.customer_interactions_histunion
+client_src.customer_profiles_histunion
+client_src.customer_orders_histunion
+client_src.customer_interactions_histunion
 
 PII Handling: Mask emails for non-consented users
 Engine: Presto
@@ -561,13 +561,13 @@ Engine: Presto
 ```
 
 **Input:**
-- Source: `mck_src.web_logs_histunion` (500M+ rows)
+- Source: `client_src.web_logs_histunion` (500M+ rows)
 - Engine: Hive
 - Dedup: By session_id, latest timestamp
 
 **Generated Hive SQL:**
 ```sql
-INSERT OVERWRITE TABLE mck_staging.web_logs_staging
+INSERT OVERWRITE TABLE client_staging.web_logs_staging
 SELECT
     session_id,
     user_id,
@@ -585,7 +585,7 @@ FROM (
             PARTITION BY session_id
             ORDER BY visit_timestamp DESC
         ) AS row_num
-    FROM mck_src.web_logs_histunion
+    FROM client_src.web_logs_histunion
     WHERE time > ${last_processed_time}
 ) ranked
 WHERE row_num = 1

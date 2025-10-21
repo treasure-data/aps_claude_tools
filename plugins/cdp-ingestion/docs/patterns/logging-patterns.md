@@ -266,7 +266,7 @@ _error:
 
 | Parameter | Description | Example Value | Required |
 |-----------|-------------|---------------|----------|
-| `${databases.src}` | Source database name | `mck_src` | Yes |
+| `${databases.src}` | Source database name | `client_src` | Yes |
 | `${source_name}` | Data source identifier | `klaviyo`, `shopify`, `onetrust` | Yes |
 | `${workflow_name}` | Workflow file name | `klaviyo_ingest.dig` | Yes |
 | `${table_name}` | Target table name | `klaviyo_events` | Yes (except error) |

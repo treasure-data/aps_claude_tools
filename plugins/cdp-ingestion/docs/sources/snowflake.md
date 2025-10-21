@@ -164,7 +164,7 @@ hist_datasources:
     default_start_time: "2024-01-01 00:00:00.000"
     workflow_name: snowflake_ingest_hist.dig
     mode: append
-    database: indresh_test
+    database: demo_db
     schema: public
 
 inc_datasources:
@@ -176,7 +176,7 @@ inc_datasources:
     default_start_time: "2024-01-01 00:00:00.000"
     workflow_name: snowflake_ingest_inc.dig
     mode: append
-    database: indresh_test
+    database: demo_db
     schema: public
 ```
 

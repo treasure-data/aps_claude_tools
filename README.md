@@ -347,10 +347,10 @@ SELECT * FROM INDRESH_TEST.PUBLIC.td_id_master_table LIMIT 10;
 │ PHASE 1: INGESTION                                                      │
 ├─────────────────────────────────────────────────────────────────────────┤
 │ Source Systems        → Raw Layer (TD)                                  │
-│ • Klaviyo            → mck_src.klaviyo_events                          │
-│ • Shopify            → mck_src.shopify_products                        │
-│ • BigQuery           → mck_src.analytics_users                         │
-│ • OneTrust           → mck_src.onetrust_profiles                       │
+│ • Klaviyo            → client_src.klaviyo_events                          │
+│ • Shopify            → client_src.shopify_products                        │
+│ • BigQuery           → client_src.analytics_users                         │
+│ • OneTrust           → client_src.onetrust_profiles                       │
 │                                                                          │
 │ Tool: /cdp-ingestion:ingest-new                                        │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -360,7 +360,7 @@ SELECT * FROM INDRESH_TEST.PUBLIC.td_id_master_table LIMIT 10;
 │ PHASE 2: HISTORICAL CONSOLIDATION                                       │
 ├─────────────────────────────────────────────────────────────────────────┤
 │ Hist + Inc Tables    → Unified Tables (TD)                             │
-│ klaviyo_events_hist  → mck_src.klaviyo_events_histunion               │
+│ klaviyo_events_hist  → client_src.klaviyo_events_histunion               │
 │ klaviyo_events       →                                                 │
 │                                                                          │
 │ Features:                                                               │
@@ -376,8 +376,8 @@ SELECT * FROM INDRESH_TEST.PUBLIC.td_id_master_table LIMIT 10;
 │ PHASE 3: STAGING TRANSFORMATION                                         │
 ├─────────────────────────────────────────────────────────────────────────┤
 │ Histunion Tables     → Staging Layer (TD)                               │
-│ mck_src.*_histunion  → mck_staging.klaviyo_events_staging             │
-│                      → mck_staging.shopify_products_staging            │
+│ client_src.*_histunion  → client_staging.klaviyo_events_staging             │
+│                      → client_staging.shopify_products_staging            │
 │                                                                          │
 │ Transformations:                                                        │
 │ • Data cleansing (trim, case normalization)                            │
@@ -394,7 +394,7 @@ SELECT * FROM INDRESH_TEST.PUBLIC.td_id_master_table LIMIT 10;
 │ PHASE 4: IDENTITY UNIFICATION                                           │
 ├─────────────────────────────────────────────────────────────────────────┤
 │ Staging Tables       → Golden Records (TD)                              │
-│ All *_staging        → mck_master.unified_customers                    │
+│ All *_staging        → client_master.unified_customers                    │
 │                                                                          │
 │ Process:                                                                │
 │ 1. Extract identity keys (email, phone, user_id)                       │
@@ -443,7 +443,7 @@ SELECT * FROM INDRESH_TEST.PUBLIC.td_id_master_table LIMIT 10;
 
 **Input**: Source details, credentials, objects to ingest
 **Output**: `ingestion/{source}_ingest_inc.dig`, config files
-**Result**: Raw data flowing into `mck_src.*` tables
+**Result**: Raw data flowing into `client_src.*` tables
 
 ---
 
@@ -454,12 +454,12 @@ SELECT * FROM INDRESH_TEST.PUBLIC.td_id_master_table LIMIT 10;
 /cdp-histunion:histunion-batch
 
 # Provide tables:
-# mck_src.klaviyo_events, mck_src.shopify_products
+# client_src.klaviyo_events, client_src.shopify_products
 ```
 
 **Input**: List of tables with hist/inc variants
 **Output**: `hist_union/queries/{table}.sql`, `hist_union_runner.dig`
-**Result**: Unified tables in `mck_src.*_histunion`
+**Result**: Unified tables in `client_src.*_histunion`
 
 ---
 
@@ -470,12 +470,12 @@ SELECT * FROM INDRESH_TEST.PUBLIC.td_id_master_table LIMIT 10;
 /cdp-staging:transform-batch
 
 # Provide list of tables:
-# mck_src.klaviyo_events_histunion, mck_src.shopify_products_histunion
+# client_src.klaviyo_events_histunion, client_src.shopify_products_histunion
 ```
 
 **Input**: List of histunion tables
 **Output**: `staging/queries/{table}_staging.sql`, workflow files
-**Result**: Clean, standardized data in `mck_staging.*` tables
+**Result**: Clean, standardized data in `client_staging.*` tables
 
 ---
 
@@ -495,7 +495,7 @@ SELECT * FROM INDRESH_TEST.PUBLIC.td_id_master_table LIMIT 10;
 
 **Input**: Database, tables with customer data
 **Output**: Prep tables, `unify.yml`, `id_unification.dig`
-**Result**: Unified customer records in `mck_master.unified_customers`
+**Result**: Unified customer records in `client_master.unified_customers`
 
 **Option B: Snowflake (hybrid)**
 
@@ -614,7 +614,7 @@ The `cdp-hybrid-idu` plugin includes a powerful reporting feature that generates
 
 # 5. Unify customer identities
 /cdp-unification:unify-setup
-# Database: mck_staging
+# Database: client_staging
 # Tables: shopify_customers_staging, klaviyo_profiles_staging
 
 # Result: Golden customer records ready for analytics and activation

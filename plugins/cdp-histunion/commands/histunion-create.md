@@ -17,13 +17,13 @@ Please provide the following details:
 
 ### 1. Table Names
 You can provide table names in any of these formats:
-- **Base name**: `mck_src.klaviyo_events` (I'll derive hist and histunion names)
-- **Hist name**: `mck_src.klaviyo_events_hist` (I'll derive inc and histunion names)
-- **Explicit**: Inc: `mck_src.klaviyo_events`, Hist: `mck_src.klaviyo_events_hist`
+- **Base name**: `client_src.klaviyo_events` (I'll derive hist and histunion names)
+- **Hist name**: `client_src.klaviyo_events_hist` (I'll derive inc and histunion names)
+- **Explicit**: Inc: `client_src.klaviyo_events`, Hist: `client_src.klaviyo_events_hist`
 
 ### 2. Lookup Database (Optional)
 - **Lookup/Config Database**: Database for inc_log watermark table
-- **Default**: `mck_references` (will be used if not specified)
+- **Default**: `config_db` (will be used if not specified)
 
 ---
 
@@ -138,7 +138,7 @@ Before delivering, I will verify:
 ✅ Watermark updates present for both hist and inc tables
 ✅ _parallel: true configured for concurrent execution
 ✅ No schedule block in workflow file
-✅ Correct lkup_db set (mck_references or user-specified)
+✅ Correct lkup_db set (config_db or user-specified)
 ```
 
 ---
@@ -288,24 +288,24 @@ FROM {database}.{table_name}
 
 ### Example 1: Simple Table Name
 ```
-User: "Create hist-union for mck_src.shopify_products"
+User: "Create hist-union for client_src.shopify_products"
 
 I will derive:
-- Inc: mck_src.shopify_products
-- Hist: mck_src.shopify_products_hist
-- Target: mck_src.shopify_products_histunion
-- Lookup DB: mck_references (default)
+- Inc: client_src.shopify_products
+- Hist: client_src.shopify_products_hist
+- Target: client_src.shopify_products_histunion
+- Lookup DB: config_db (default)
 ```
 
 ### Example 2: Hist Table Name
 ```
-User: "Add mck_src.klaviyo_events_hist to hist_union"
+User: "Add client_src.klaviyo_events_hist to hist_union"
 
 I will derive:
-- Inc: mck_src.klaviyo_events
-- Hist: mck_src.klaviyo_events_hist
-- Target: mck_src.klaviyo_events_histunion
-- Lookup DB: mck_references (default)
+- Inc: client_src.klaviyo_events
+- Hist: client_src.klaviyo_events_hist
+- Target: client_src.klaviyo_events_histunion
+- Lookup DB: config_db (default)
 ```
 
 ### Example 3: Custom Lookup DB

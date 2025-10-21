@@ -12,7 +12,7 @@ Create hist-union for a table where incremental and historical tables have ident
 
 ### Input
 ```
-Table: mck_src.klaviyo_campaigns
+Table: client_src.klaviyo_campaigns
 Inc schema: id, name, status, created_at, updated_at, time
 Hist schema: id, name, status, created_at, updated_at, time
 ```
@@ -20,7 +20,7 @@ Hist schema: id, name, status, created_at, updated_at, time
 ### Generated SQL (queries/klaviyo_campaigns.sql)
 ```sql
 -- Create histunion table if not exists
-CREATE TABLE IF NOT EXISTS mck_src.klaviyo_campaigns_histunion (
+CREATE TABLE IF NOT EXISTS client_src.klaviyo_campaigns_histunion (
   id varchar,
   name varchar,
   status varchar,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS mck_src.klaviyo_campaigns_histunion (
 );
 
 -- Insert incremental data from both hist and inc tables
-INSERT INTO mck_src.klaviyo_campaigns_histunion
+INSERT INTO client_src.klaviyo_campaigns_histunion
 -- Historical data
 SELECT
   id,
@@ -39,9 +39,9 @@ SELECT
   created_at,
   updated_at,
   time
-FROM mck_src.klaviyo_campaigns_hist
+FROM client_src.klaviyo_campaigns_hist
 WHERE time > COALESCE(
-  (SELECT MAX(inc_value) FROM mck_references.inc_log
+  (SELECT MAX(inc_value) FROM config_db.inc_log
    WHERE table_name = 'klaviyo_campaigns_hist' AND project_name = 'hist_union'),
   0
 )
@@ -56,22 +56,22 @@ SELECT
   created_at,
   updated_at,
   time
-FROM mck_src.klaviyo_campaigns
+FROM client_src.klaviyo_campaigns
 WHERE time > COALESCE(
-  (SELECT MAX(inc_value) FROM mck_references.inc_log
+  (SELECT MAX(inc_value) FROM config_db.inc_log
    WHERE table_name = 'klaviyo_campaigns' AND project_name = 'hist_union'),
   0
 );
 
 -- Update watermark for historical table
-INSERT INTO mck_references.inc_log
+INSERT INTO config_db.inc_log
 SELECT 'klaviyo_campaigns_hist' table_name, 'hist_union' project_name, MAX(time) inc_value
-FROM mck_src.klaviyo_campaigns_hist;
+FROM client_src.klaviyo_campaigns_hist;
 
 -- Update watermark for incremental table
-INSERT INTO mck_references.inc_log
+INSERT INTO config_db.inc_log
 SELECT 'klaviyo_campaigns' table_name, 'hist_union' project_name, MAX(time) inc_value
-FROM mck_src.klaviyo_campaigns;
+FROM client_src.klaviyo_campaigns;
 ```
 
 ---
@@ -83,7 +83,7 @@ Create hist-union for a table where incremental table has an extra `incremental_
 
 ### Input
 ```
-Table: mck_src.klaviyo_events
+Table: client_src.klaviyo_events
 Inc schema: incremental_date, id, event_name, user_id, timestamp, properties, time
 Hist schema: id, event_name, user_id, timestamp, properties, time
 ```
@@ -92,7 +92,7 @@ Hist schema: id, event_name, user_id, timestamp, properties, time
 ```sql
 -- Create histunion table if not exists
 -- **CRITICAL**: Use INCREMENTAL table schema as base (includes incremental_date column)
-CREATE TABLE IF NOT EXISTS mck_src.klaviyo_events_histunion (
+CREATE TABLE IF NOT EXISTS client_src.klaviyo_events_histunion (
   incremental_date varchar,
   id varchar,
   event_name varchar,
@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS mck_src.klaviyo_events_histunion (
 );
 
 -- Insert incremental data from both hist and inc tables
-INSERT INTO mck_src.klaviyo_events_histunion
+INSERT INTO client_src.klaviyo_events_histunion
 -- Historical data (add NULL for incremental_date since hist table doesn't have it)
 SELECT
   NULL as incremental_date,
@@ -113,9 +113,9 @@ SELECT
   timestamp,
   properties,
   time
-FROM mck_src.klaviyo_events_hist
+FROM client_src.klaviyo_events_hist
 WHERE time > COALESCE(
-  (SELECT MAX(inc_value) FROM mck_references.inc_log
+  (SELECT MAX(inc_value) FROM config_db.inc_log
    WHERE table_name = 'klaviyo_events_hist' AND project_name = 'hist_union'),
   0
 )
@@ -131,22 +131,22 @@ SELECT
   timestamp,
   properties,
   time
-FROM mck_src.klaviyo_events
+FROM client_src.klaviyo_events
 WHERE time > COALESCE(
-  (SELECT MAX(inc_value) FROM mck_references.inc_log
+  (SELECT MAX(inc_value) FROM config_db.inc_log
    WHERE table_name = 'klaviyo_events' AND project_name = 'hist_union'),
   0
 );
 
 -- Update watermark for historical table
-INSERT INTO mck_references.inc_log
+INSERT INTO config_db.inc_log
 SELECT 'klaviyo_events_hist' table_name, 'hist_union' project_name, MAX(time) inc_value
-FROM mck_src.klaviyo_events_hist;
+FROM client_src.klaviyo_events_hist;
 
 -- Update watermark for incremental table
-INSERT INTO mck_references.inc_log
+INSERT INTO config_db.inc_log
 SELECT 'klaviyo_events' table_name, 'hist_union' project_name, MAX(time) inc_value
-FROM mck_src.klaviyo_events;
+FROM client_src.klaviyo_events;
 ```
 
 ---
@@ -158,7 +158,7 @@ Create hist-union for a full load table (klaviyo_lists) that requires complete r
 
 ### Input
 ```
-Table: mck_src.klaviyo_lists
+Table: client_src.klaviyo_lists
 Type: FULL LOAD (complete reload each run)
 Inc schema: id, name, list_type, created, updated, time
 Hist schema: id, name, list_type, created, updated, time
@@ -167,9 +167,9 @@ Hist schema: id, name, list_type, created, updated, time
 ### Generated SQL (queries/klaviyo_lists.sql)
 ```sql
 -- Drop and recreate histunion table for full load
-DROP TABLE IF EXISTS mck_src.klaviyo_lists_histunion;
+DROP TABLE IF EXISTS client_src.klaviyo_lists_histunion;
 
-CREATE TABLE mck_src.klaviyo_lists_histunion (
+CREATE TABLE client_src.klaviyo_lists_histunion (
   id varchar,
   name varchar,
   list_type varchar,
@@ -179,7 +179,7 @@ CREATE TABLE mck_src.klaviyo_lists_histunion (
 );
 
 -- Full load from both hist and inc tables (NO WHERE CLAUSE)
-INSERT INTO mck_src.klaviyo_lists_histunion
+INSERT INTO client_src.klaviyo_lists_histunion
 -- Historical data
 SELECT
   id,
@@ -188,7 +188,7 @@ SELECT
   created,
   updated,
   time
-FROM mck_src.klaviyo_lists_hist
+FROM client_src.klaviyo_lists_hist
 
 UNION ALL
 
@@ -200,17 +200,17 @@ SELECT
   created,
   updated,
   time
-FROM mck_src.klaviyo_lists;
+FROM client_src.klaviyo_lists;
 
 -- Update watermark for historical table
-INSERT INTO mck_references.inc_log
+INSERT INTO config_db.inc_log
 SELECT 'klaviyo_lists_hist' table_name, 'hist_union' project_name, MAX(time) inc_value
-FROM mck_src.klaviyo_lists_hist;
+FROM client_src.klaviyo_lists_hist;
 
 -- Update watermark for incremental table
-INSERT INTO mck_references.inc_log
+INSERT INTO config_db.inc_log
 SELECT 'klaviyo_lists' table_name, 'hist_union' project_name, MAX(time) inc_value
-FROM mck_src.klaviyo_lists;
+FROM client_src.klaviyo_lists;
 ```
 
 ---
@@ -223,10 +223,10 @@ Create hist-union workflows for multiple tables at once.
 ### Input
 ```
 Tables:
-1. mck_src.klaviyo_events
-2. mck_src.shopify_products
-3. mck_src.onetrust_profiles
-4. mck_src.klaviyo_lists (full load)
+1. client_src.klaviyo_events
+2. client_src.shopify_products
+3. client_src.onetrust_profiles
+4. client_src.klaviyo_lists (full load)
 ```
 
 ### Generated Workflow (hist_union_runner.dig)
@@ -235,8 +235,8 @@ timezone: UTC
 
 _export:
   td:
-    database: mck_src
-  lkup_db: mck_references
+    database: client_src
+  lkup_db: config_db
 
 +create_inc_log_table:
   td>:
@@ -283,7 +283,7 @@ Table has a column named "index" which is a reserved keyword in Presto/Trino.
 
 ### Input
 ```
-Table: mck_src.product_catalog
+Table: client_src.product_catalog
 Inc schema: id, "index", name, category, price, time
 Hist schema: id, "index", name, category, price, time
 ```
@@ -291,7 +291,7 @@ Hist schema: id, "index", name, category, price, time
 ### Generated SQL (queries/product_catalog.sql)
 ```sql
 -- Create histunion table if not exists
-CREATE TABLE IF NOT EXISTS mck_src.product_catalog_histunion (
+CREATE TABLE IF NOT EXISTS client_src.product_catalog_histunion (
   id varchar,
   "index" bigint,
   name varchar,
@@ -301,7 +301,7 @@ CREATE TABLE IF NOT EXISTS mck_src.product_catalog_histunion (
 );
 
 -- Insert incremental data from both hist and inc tables
-INSERT INTO mck_src.product_catalog_histunion
+INSERT INTO client_src.product_catalog_histunion
 -- Historical data
 SELECT
   id,
@@ -310,9 +310,9 @@ SELECT
   category,
   price,
   time
-FROM mck_src.product_catalog_hist
+FROM client_src.product_catalog_hist
 WHERE time > COALESCE(
-  (SELECT MAX(inc_value) FROM mck_references.inc_log
+  (SELECT MAX(inc_value) FROM config_db.inc_log
    WHERE table_name = 'product_catalog_hist' AND project_name = 'hist_union'),
   0
 )
@@ -327,21 +327,21 @@ SELECT
   category,
   price,
   time
-FROM mck_src.product_catalog
+FROM client_src.product_catalog
 WHERE time > COALESCE(
-  (SELECT MAX(inc_value) FROM mck_references.inc_log
+  (SELECT MAX(inc_value) FROM config_db.inc_log
    WHERE table_name = 'product_catalog' AND project_name = 'hist_union'),
   0
 );
 
 -- Update watermarks
-INSERT INTO mck_references.inc_log
+INSERT INTO config_db.inc_log
 SELECT 'product_catalog_hist' table_name, 'hist_union' project_name, MAX(time) inc_value
-FROM mck_src.product_catalog_hist;
+FROM client_src.product_catalog_hist;
 
-INSERT INTO mck_references.inc_log
+INSERT INTO config_db.inc_log
 SELECT 'product_catalog' table_name, 'hist_union' project_name, MAX(time) inc_value
-FROM mck_src.product_catalog;
+FROM client_src.product_catalog;
 ```
 
 **Note**: Double quotes `"index"` are used instead of backticks for Presto/Trino compatibility.
@@ -351,7 +351,7 @@ FROM mck_src.product_catalog;
 ## Example 6: Custom Lookup Database
 
 ### Scenario
-Use a custom database for inc_log watermark tracking instead of default mck_references.
+Use a custom database for inc_log watermark tracking instead of default config_db.
 
 ### Input
 ```
@@ -386,7 +386,7 @@ _export:
 
 ### Generated SQL
 ```sql
--- Uses mc_config.inc_log instead of mck_references.inc_log
+-- Uses mc_config.inc_log instead of config_db.inc_log
 WHERE time > COALESCE(
   (SELECT MAX(inc_value) FROM mc_config.inc_log
    WHERE table_name = 'users_hist' AND project_name = 'hist_union'),
@@ -405,7 +405,7 @@ SELECT
   project_name,
   inc_value,
   FROM_UNIXTIME(inc_value) as last_update_time
-FROM mck_references.inc_log
+FROM config_db.inc_log
 WHERE project_name = 'hist_union'
 ORDER BY table_name;
 ```
@@ -413,17 +413,17 @@ ORDER BY table_name;
 ### Compare Row Counts
 ```sql
 -- Check individual table counts
-SELECT 'inc' as source, COUNT(*) as row_count FROM mck_src.klaviyo_events
+SELECT 'inc' as source, COUNT(*) as row_count FROM client_src.klaviyo_events
 UNION ALL
-SELECT 'hist', COUNT(*) FROM mck_src.klaviyo_events_hist
+SELECT 'hist', COUNT(*) FROM client_src.klaviyo_events_hist
 UNION ALL
-SELECT 'histunion', COUNT(*) FROM mck_src.klaviyo_events_histunion;
+SELECT 'histunion', COUNT(*) FROM client_src.klaviyo_events_histunion;
 ```
 
 ### Verify Schema
 ```sql
 -- Check histunion table structure
-SHOW COLUMNS FROM mck_src.klaviyo_events_histunion;
+SHOW COLUMNS FROM client_src.klaviyo_events_histunion;
 ```
 
 ### Sample Data Validation
@@ -432,7 +432,7 @@ SHOW COLUMNS FROM mck_src.klaviyo_events_histunion;
 SELECT
   CASE WHEN incremental_date IS NULL THEN 'from_hist' ELSE 'from_inc' END as source,
   COUNT(*) as row_count
-FROM mck_src.klaviyo_events_histunion
+FROM client_src.klaviyo_events_histunion
 GROUP BY 1;
 ```
 
@@ -503,13 +503,13 @@ Issue: Same data processed repeatedly
 ```sql
 -- Create index on inc_log for faster lookups
 CREATE INDEX IF NOT EXISTS idx_inc_log_lookup
-ON mck_references.inc_log (table_name, project_name);
+ON config_db.inc_log (table_name, project_name);
 ```
 
 ### Tip 3: Partition Large Tables
 ```sql
 -- For very large histunion tables, consider partitioning
-CREATE TABLE mck_src.klaviyo_events_histunion (
+CREATE TABLE client_src.klaviyo_events_histunion (
   ...
 )
 PARTITIONED BY (dt);

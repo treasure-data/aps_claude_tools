@@ -53,29 +53,29 @@ This plugin creates production-ready hist-union workflows to combine historical 
 - **Incremental table name** (e.g., `mc_src.klaviyo_events`)
 - **Historical table name** (e.g., `mc_src.klaviyo_events_hist`)
 - **Target histunion table name** (e.g., `mc_src.klaviyo_events_histunion`)
-- **Optional**: Lookup/config database name (defaults to `mck_references` if not specified)
+- **Optional**: Lookup/config database name (defaults to `config_db` if not specified)
 
 ---
 
 ## Parse User Input Intelligently **CRITICAL**
 
-Example input: "Please add mck_src.shopify_products and mck_src.shopify_product_variants_hist table in hist_union project"
+Example input: "Please add client_src.shopify_products and client_src.shopify_product_variants_hist table in hist_union project"
 
 1. **Parse database and table_name from input**:
-   - database = `mck_src`
+   - database = `client_src`
    - table_name = `shopify_products` and `shopify_product_variants_hist`
 
 2. **Remove _hist or _histunion suffix if present**:
 
    For table 1:
-   - Inc: `mck_src.shopify_products`
-   - Hist: `mck_src.shopify_products_hist`
-   - Target: `mck_src.shopify_products_histunion`
+   - Inc: `client_src.shopify_products`
+   - Hist: `client_src.shopify_products_hist`
+   - Target: `client_src.shopify_products_histunion`
 
    For table 2:
-   - Inc: `mck_src.shopify_product_variants`
-   - Hist: `mck_src.shopify_product_variants_hist`
-   - Target: `mck_src.shopify_product_variants_histunion`
+   - Inc: `client_src.shopify_product_variants`
+   - Hist: `client_src.shopify_product_variants_hist`
+   - Target: `client_src.shopify_product_variants_histunion`
 
 ---
 
@@ -293,8 +293,8 @@ _export:
 13. **ALWAYS** update watermarks for both hist and inc tables (even FULL LOAD)
 14. **ALWAYS** use project_name = 'hist_union' in inc_log entries
 15. **ALWAYS** wrap hist_union tasks with `_parallel: true` for concurrent execution
-16. **CRITICAL**: **ALWAYS** use `mck_references` as default lookup database (lkup_db) unless user specifies different
-17. **MANDATORY**: Auto-set lkup_db to `mck_references` if user doesn't specify
+16. **CRITICAL**: **ALWAYS** use `config_db` as default lookup database (lkup_db) unless user specifies different
+17. **MANDATORY**: Auto-set lkup_db to `config_db` if user doesn't specify
 18. **SQL SYNTAX**: For Presto/Trino compatibility:
     - Use double quotes `"column_name"` for reserved keywords (like "index")
     - NEVER use backticks `` `column_name` `` (not supported)
@@ -304,8 +304,8 @@ _export:
 ## Full Load Tables
 
 **These tables ALWAYS use FULL LOAD (Case 3 template):**
-- `mck_src.klaviyo_lists_histunion`
-- `mck_src.klaviyo_metric_data_histunion`
+- `client_src.klaviyo_lists_histunion`
+- `client_src.klaviyo_metric_data_histunion`
 
 **FULL LOAD means:**
 - DROP and recreate histunion table every run
@@ -352,7 +352,7 @@ project_root/
 7. ✅ **Watermarks included**: Both hist and inc table watermark updates present
 8. ✅ **Parallel execution**: _parallel: true wrapper present in workflow
 9. ✅ **No schedule block**: Schedule removed from workflow
-10. ✅ **Correct lkup_db**: Set to mck_references or user-specified value
+10. ✅ **Correct lkup_db**: Set to config_db or user-specified value
 
 ---
 

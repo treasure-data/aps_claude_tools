@@ -159,17 +159,17 @@ Task Parameters:
 Task 1:
 - subagent_type: "staging-transformer-presto"
 - description: "Transform table A"
-- prompt: "Transform table indresh_test.table_a according to ALL CLAUDE.md specifications using treasuredata MCP Server. Use indresh_test_staging as staging database. CRITICAL: create staging_transformation.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. SKIP git workflow - main Claude will handle final consolidation."
+- prompt: "Transform table demo_db.table_a according to ALL CLAUDE.md specifications using treasuredata MCP Server. Use demo_db_staging as staging database. CRITICAL: create staging_transformation.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. SKIP git workflow - main Claude will handle final consolidation."
 
 Task 2:
 - subagent_type: "staging-transformer-presto"
 - description: "Transform table B"
-- prompt: "Transform table indresh_test.table_b according to ALL CLAUDE.md specifications using treasuredata MCP Server. Work in staging/ directory. Use indresh_test_staging as staging database. CRITICAL: create staging/staging_transformation.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. SKIP git workflow - main Claude will handle final consolidation."
+- prompt: "Transform table demo_db.table_b according to ALL CLAUDE.md specifications using treasuredata MCP Server. Work in staging/ directory. Use demo_db_staging as staging database. CRITICAL: create staging/staging_transformation.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. SKIP git workflow - main Claude will handle final consolidation."
 
 Task 3:
 - subagent_type: "staging-transformer-presto"
 - description: "Transform table C"
-- prompt: "Transform table indresh_test.table_c according to ALL CLAUDE.md specifications using treasuredata MCP Server. Use indresh_test_staging as staging database. CRITICAL: create staging_transformation.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. SKIP git workflow - main Claude will handle final consolidation."
+- prompt: "Transform table demo_db.table_c according to ALL CLAUDE.md specifications using treasuredata MCP Server. Use demo_db_staging as staging database. CRITICAL: create staging_transformation.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. SKIP git workflow - main Claude will handle final consolidation."
 ```
 
 ##### **Mixed Engine Processing**
@@ -180,12 +180,12 @@ Task 3:
 Task 1:
 - subagent_type: "staging-transformer-hive"
 - description: "Transform table A using Hive"
-- prompt: "Transform table indresh_test.table_a according to ALL CLAUDE.md specifications using treasuredata MCP Server with Hive-compatible SQL. Use indresh_test_staging as staging database. CRITICAL: create staging_transformation.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. SKIP git workflow - main Claude will handle final consolidation."
+- prompt: "Transform table demo_db.table_a according to ALL CLAUDE.md specifications using treasuredata MCP Server with Hive-compatible SQL. Use demo_db_staging as staging database. CRITICAL: create staging_transformation.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. SKIP git workflow - main Claude will handle final consolidation."
 
 Task 2:
 - subagent_type: "staging-transformer-presto"
 - description: "Transform table B using Presto"
-- prompt: "Transform table indresh_test.table_b according to ALL CLAUDE.md specifications using treasuredata MCP Server with Presto SQL. Work in staging/ directory. Use indresh_test_staging as staging database. CRITICAL: create staging/staging_transformation.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. SKIP git workflow - main Claude will handle final consolidation."
+- prompt: "Transform table demo_db.table_b according to ALL CLAUDE.md specifications using treasuredata MCP Server with Presto SQL. Work in staging/ directory. Use demo_db_staging as staging database. CRITICAL: create staging/staging_transformation.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. SKIP git workflow - main Claude will handle final consolidation."
 ```
 
 #### Sequential Batch Transformation (Fallback)
@@ -195,7 +195,7 @@ Task 2:
 Task Parameters:
 - subagent_type: "staging-transformer-presto"
 - description: "Sequential batch transform with Presto"
-- prompt: "Transform tables indresh_test.table1, indresh_test.table2, indresh_test.table3 from indresh_test database. Use treasuredata MCP Server. Work in staging/ directory. Use indresh_test_staging as staging database. CRITICAL: create staging/staging_transformation.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. Process ALL tables first with complete compliance, then execute git workflow ONLY after all transformations complete."
+- prompt: "Transform tables demo_db.table1, demo_db.table2, demo_db.table3 from demo_db database. Use treasuredata MCP Server. Work in staging/ directory. Use demo_db_staging as staging database. CRITICAL: create staging/staging_transformation.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. Process ALL tables first with complete compliance, then execute git workflow ONLY after all transformations complete."
 ```
 
 ##### **Hive Engine**
@@ -203,7 +203,7 @@ Task Parameters:
 Task Parameters:
 - subagent_type: "staging-transformer-hive"
 - description: "Sequential batch transform with Hive"
-- prompt: "Transform tables indresh_test.table1, indresh_test.table2, indresh_test.table3 from indresh_test database using Hive-compatible SQL. Use treasuredata MCP Server. Work in staging_hive/ directory. Use indresh_test_staging as staging database. CRITICAL: create staging_hive/staging_hive.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. Process ALL tables first with complete compliance, then execute git workflow ONLY after all transformations complete."
+- prompt: "Transform tables demo_db.table1, demo_db.table2, demo_db.table3 from demo_db database using Hive-compatible SQL. Use treasuredata MCP Server. Work in staging_hive/ directory. Use demo_db_staging as staging database. CRITICAL: create staging_hive/staging_hive.dig if it doesn't exist. CRITICAL: Only apply deduplication if explicitly configured in config_db.staging_trnsfrm_rules OR explicitly requested by user. NEVER make autonomous deduplication decisions based on table structure. Process ALL tables first with complete compliance, then execute git workflow ONLY after all transformations complete."
 ```
 
 ### Table Parsing Logic

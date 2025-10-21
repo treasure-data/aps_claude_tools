@@ -69,7 +69,7 @@ Create hist-union for a single table pair.
 ```
 
 **Prompts for:**
-- Database name (e.g., `mck_src`)
+- Database name (e.g., `client_src`)
 - Base table name (e.g., `klaviyo_events`)
 - Output table suffix (default: `_histunion`)
 - Insert mode (append/replace)
@@ -80,13 +80,13 @@ Create hist-union for a single table pair.
 
 **Example:**
 ```
-Input: database=mck_src, table=klaviyo_events
+Input: database=client_src, table=klaviyo_events
 Checks for:
-  - mck_src.klaviyo_events_hist
-  - mck_src.klaviyo_events
+  - client_src.klaviyo_events_hist
+  - client_src.klaviyo_events
 
 Output:
-  - mck_src.klaviyo_events_histunion
+  - client_src.klaviyo_events_histunion
 ```
 
 ---
@@ -107,7 +107,7 @@ Create hist-union for multiple tables in parallel with maximum efficiency.
 
 **Example Input:**
 ```
-Database: mck_src
+Database: client_src
 
 Tables:
 klaviyo_events
@@ -131,7 +131,7 @@ timezone: UTC
 
 _export:
   td:
-    database: mck_src
+    database: client_src
 
 _parallel: true
 
@@ -175,15 +175,15 @@ Validating: hist_union/queries/klaviyo_events_histunion.sql
 
 ✓ SQL syntax valid
 ✓ Source tables exist:
-  - mck_src.klaviyo_events_hist
-  - mck_src.klaviyo_events
+  - client_src.klaviyo_events_hist
+  - client_src.klaviyo_events
 ✓ Schema compatibility check passed
 ✓ Watermark logic found (inc_log table)
 ✓ UNION ALL structure correct
 ✓ Column count matches (45 columns)
 ✓ NULL handling for schema differences
 ✓ Incremental filter present
-✓ Output table: mck_src.klaviyo_events_histunion
+✓ Output table: client_src.klaviyo_events_histunion
 
 Overall: PASS
 ```
@@ -197,12 +197,12 @@ Overall: PASS
 ```sql
 -- File: hist_union/queries/shopify_orders_histunion.sql
 
-INSERT INTO mck_src.shopify_orders_histunion
-SELECT * FROM mck_src.shopify_orders_hist
+INSERT INTO client_src.shopify_orders_histunion
+SELECT * FROM client_src.shopify_orders_hist
 
 UNION ALL
 
-SELECT * FROM mck_src.shopify_orders
+SELECT * FROM client_src.shopify_orders
 WHERE time > (
     SELECT COALESCE(MAX(last_timestamp), 0)
     FROM inc_log
@@ -216,7 +216,7 @@ WHERE time > (
 -- Historical table has: id, name, email, created_at
 -- Incremental table has: id, name, email, created_at, updated_at
 
-INSERT INTO mck_src.customers_histunion
+INSERT INTO client_src.customers_histunion
 
 -- Historical data (missing updated_at column)
 SELECT
@@ -226,7 +226,7 @@ SELECT
     created_at,
     NULL AS updated_at,  -- Add NULL for missing column
     time
-FROM mck_src.customers_hist
+FROM client_src.customers_hist
 
 UNION ALL
 
@@ -238,7 +238,7 @@ SELECT
     created_at,
     updated_at,
     time
-FROM mck_src.customers
+FROM client_src.customers
 WHERE time > (
     SELECT COALESCE(MAX(last_timestamp), 0)
     FROM inc_log
@@ -252,8 +252,8 @@ WHERE time > (
 -- File: hist_union/queries/klaviyo_lists_histunion.sql
 -- Lists are always full snapshot, no incremental
 
-INSERT OVERWRITE TABLE mck_src.klaviyo_lists_histunion
-SELECT * FROM mck_src.klaviyo_lists
+INSERT OVERWRITE TABLE client_src.klaviyo_lists_histunion
+SELECT * FROM client_src.klaviyo_lists
 -- No UNION with hist, just use latest full snapshot
 ```
 
@@ -262,7 +262,7 @@ SELECT * FROM mck_src.klaviyo_lists
 ```sql
 -- Incremental table has NEW column that historical doesn't
 
-INSERT INTO mck_src.products_histunion
+INSERT INTO client_src.products_histunion
 
 -- Historical (missing: discount_percent, tags array)
 SELECT
@@ -273,7 +273,7 @@ SELECT
     ARRAY[] AS tags,                  -- New array column
     created_at,
     time
-FROM mck_src.products_hist
+FROM client_src.products_hist
 
 UNION ALL
 
@@ -286,7 +286,7 @@ SELECT
     tags,
     created_at,
     time
-FROM mck_src.products
+FROM client_src.products
 WHERE time > (
     SELECT COALESCE(MAX(last_timestamp), 0)
     FROM inc_log
@@ -297,7 +297,7 @@ WHERE time > (
 ### Pattern 5: With Data Type Casting
 
 ```sql
-INSERT INTO mck_src.events_histunion
+INSERT INTO client_src.events_histunion
 
 SELECT
     event_id,
@@ -306,7 +306,7 @@ SELECT
     event_type,
     CAST(properties AS JSON) AS properties,  -- Cast to JSON type
     time
-FROM mck_src.events_hist
+FROM client_src.events_hist
 
 UNION ALL
 
@@ -317,7 +317,7 @@ SELECT
     event_type,
     CAST(properties AS JSON) AS properties,
     time
-FROM mck_src.events
+FROM client_src.events
 WHERE time > (
     SELECT COALESCE(MAX(last_timestamp), 0)
     FROM inc_log
@@ -348,7 +348,7 @@ After successful hist-union:
 INSERT INTO inc_log (table_name, last_timestamp, last_updated)
 VALUES (
     'klaviyo_events',
-    (SELECT MAX(time) FROM mck_src.klaviyo_events),
+    (SELECT MAX(time) FROM client_src.klaviyo_events),
     CURRENT_TIMESTAMP
 )
 ON DUPLICATE KEY UPDATE
@@ -379,7 +379,7 @@ WHERE table_name = 'table_name'
 ```
 
 **Input:**
-- Database: `mck_src`
+- Database: `client_src`
 - Table: `klaviyo_events`
 - Output suffix: `_histunion`
 - Mode: Append
@@ -387,8 +387,8 @@ WHERE table_name = 'table_name'
 **MCP Analysis:**
 ```
 Checking schema for:
-  - mck_src.klaviyo_events_hist (45 columns)
-  - mck_src.klaviyo_events (46 columns)
+  - client_src.klaviyo_events_hist (45 columns)
+  - client_src.klaviyo_events (46 columns)
 
 Schema Difference Detected:
   Incremental table has additional column: 'incremental_date'
@@ -399,7 +399,7 @@ Resolution:
 
 **Generated SQL:**
 ```sql
-INSERT INTO mck_src.klaviyo_events_histunion
+INSERT INTO client_src.klaviyo_events_histunion
 
 SELECT
     event_id,
@@ -411,7 +411,7 @@ SELECT
     -- ... (other 38 columns)
     NULL AS incremental_date,  -- Missing in hist table
     time
-FROM mck_src.klaviyo_events_hist
+FROM client_src.klaviyo_events_hist
 
 UNION ALL
 
@@ -425,7 +425,7 @@ SELECT
     -- ... (other 38 columns)
     incremental_date,
     time
-FROM mck_src.klaviyo_events
+FROM client_src.klaviyo_events
 WHERE time > (
     SELECT COALESCE(MAX(last_timestamp), 0)
     FROM inc_log
@@ -492,7 +492,7 @@ _parallel: true
 ```
 
 **Input:**
-- Database: `mck_src`
+- Database: `client_src`
 - Table: `klaviyo_lists`
 
 **Auto-Detection:**
@@ -504,8 +504,8 @@ Using INSERT OVERWRITE mode (no watermark)
 **Generated SQL:**
 ```sql
 -- Full snapshot, no historical union needed
-INSERT OVERWRITE TABLE mck_src.klaviyo_lists_histunion
-SELECT * FROM mck_src.klaviyo_lists
+INSERT OVERWRITE TABLE client_src.klaviyo_lists_histunion
+SELECT * FROM client_src.klaviyo_lists
 ```
 
 ---
@@ -519,8 +519,8 @@ SELECT * FROM mck_src.klaviyo_lists
 **Solution:**
 ```sql
 -- Just use incremental table
-INSERT INTO mck_src.table_histunion
-SELECT * FROM mck_src.table
+INSERT INTO client_src.table_histunion
+SELECT * FROM client_src.table
 WHERE time > (
     SELECT COALESCE(MAX(last_timestamp), 0)
     FROM inc_log
@@ -535,8 +535,8 @@ WHERE time > (
 **Solution:**
 ```sql
 -- Just use historical table
-INSERT INTO mck_src.table_histunion
-SELECT * FROM mck_src.table_hist
+INSERT INTO client_src.table_histunion
+SELECT * FROM client_src.table_hist
 ```
 
 ### Case 3: Both Tables Missing Columns
@@ -548,14 +548,14 @@ SELECT * FROM mck_src.table_hist
 -- Hist has: id, name, created_at
 -- Inc has: id, name, updated_at
 
-INSERT INTO mck_src.table_histunion
+INSERT INTO client_src.table_histunion
 
 SELECT
     id,
     name,
     created_at,
     NULL AS updated_at
-FROM mck_src.table_hist
+FROM client_src.table_hist
 
 UNION ALL
 
@@ -564,7 +564,7 @@ SELECT
     name,
     NULL AS created_at,
     updated_at
-FROM mck_src.table
+FROM client_src.table
 WHERE time > (SELECT COALESCE(MAX(last_timestamp), 0) FROM inc_log WHERE table_name = 'table')
 ```
 
@@ -698,21 +698,21 @@ All hist-union SQL must include:
 SELECT
     'hist' AS source,
     COUNT(*) AS row_count
-FROM mck_src.klaviyo_events_hist
+FROM client_src.klaviyo_events_hist
 
 UNION ALL
 
 SELECT
     'inc' AS source,
     COUNT(*) AS row_count
-FROM mck_src.klaviyo_events
+FROM client_src.klaviyo_events
 
 UNION ALL
 
 SELECT
     'histunion' AS source,
     COUNT(*) AS row_count
-FROM mck_src.klaviyo_events_histunion
+FROM client_src.klaviyo_events_histunion
 ```
 
 ### Verify Incremental Loading
@@ -725,7 +725,7 @@ WHERE table_name = 'klaviyo_events'
 
 -- Check latest data in histunion
 SELECT MAX(time) AS latest_time
-FROM mck_src.klaviyo_events_histunion
+FROM client_src.klaviyo_events_histunion
 ```
 
 ---

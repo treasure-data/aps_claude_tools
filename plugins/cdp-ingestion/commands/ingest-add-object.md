@@ -154,7 +154,7 @@ td wf run {source}_ingest_hist.dig
 
 ### 4. Monitor Ingestion
 ```sql
-SELECT * FROM mck_src.ingestion_log
+SELECT * FROM client_src.ingestion_log
 WHERE source_name = '{source}'
   AND table_name = '{source}_{object}'
 ORDER BY time DESC
@@ -166,7 +166,7 @@ LIMIT 10
 SELECT COUNT(*) as row_count,
        MIN(time) as first_record,
        MAX(time) as last_record
-FROM mck_src.{source}_{object}
+FROM client_src.{source}_{object}
 ```
 
 ---

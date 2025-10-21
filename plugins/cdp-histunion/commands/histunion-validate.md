@@ -108,7 +108,7 @@ Validating hist_union_runner.dig...
 Validating hist_union/queries/klaviyo_events.sql...
 ✅ SQL syntax valid (Presto/Trino compatible)
 ✅ CREATE TABLE statement found
-✅ Table name: mck_src.klaviyo_events_histunion
+✅ Table name: client_src.klaviyo_events_histunion
 ✅ INSERT INTO with UNION ALL structure found
 ✅ Watermark filtering present for hist table
 ✅ Watermark filtering present for inc table
@@ -123,8 +123,8 @@ Validating hist_union/queries/klaviyo_events.sql...
 Validating schemas via MCP tool...
 
 Table: klaviyo_events
-✅ Inc table exists: mck_src.klaviyo_events
-✅ Hist table exists: mck_src.klaviyo_events_hist
+✅ Inc table exists: client_src.klaviyo_events
+✅ Hist table exists: client_src.klaviyo_events_hist
 ✅ Retrieved inc schema: 45 columns
 ✅ Retrieved hist schema: 44 columns
 ✅ Schema difference: inc has 'incremental_date', hist does not
@@ -196,7 +196,7 @@ SQL FILE: queries/klaviyo_events.sql
 ───────────────────────────────────────────────────────────
 ✅ SQL Syntax: Valid (Presto/Trino)
 ✅ Template: Case 2 (Inc has extra columns)
-✅ Table: mck_src.klaviyo_events_histunion
+✅ Table: client_src.klaviyo_events_histunion
 ✅ CREATE TABLE: Present
 ✅ UNION ALL: Correct structure
 ✅ Watermarks: Both hist and inc updates present

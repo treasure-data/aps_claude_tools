@@ -302,9 +302,9 @@ Historical workflows additionally include:
 **EXACT TEMPLATE**:
 ```yaml
 databases:
-  src: mck_src
-  stg: mck_stg
-  gld: mck_gld
+  src: client_src
+  stg: client_stg
+  gld: client_gld
   unif: cdp_unification_mck
 
 td_authentication_ids:

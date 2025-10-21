@@ -18,31 +18,31 @@ Provide table names in any format (comma-separated or one per line):
 
 **Option A - Base names:**
 ```
-mck_src.klaviyo_events, mck_src.shopify_products, mck_src.onetrust_profiles
+client_src.klaviyo_events, client_src.shopify_products, client_src.onetrust_profiles
 ```
 
 **Option B - Hist names:**
 ```
-mck_src.klaviyo_events_hist
-mck_src.shopify_products_hist
-mck_src.onetrust_profiles_hist
+client_src.klaviyo_events_hist
+client_src.shopify_products_hist
+client_src.onetrust_profiles_hist
 ```
 
 **Option C - Mixed formats:**
 ```
-mck_src.klaviyo_events, mck_src.shopify_products_hist, mck_src.onetrust_profiles
+client_src.klaviyo_events, client_src.shopify_products_hist, client_src.onetrust_profiles
 ```
 
 **Option D - List format:**
 ```
-- mck_src.klaviyo_events
-- mck_src.shopify_products
-- mck_src.onetrust_profiles
+- client_src.klaviyo_events
+- client_src.shopify_products
+- client_src.onetrust_profiles
 ```
 
 ### 2. Lookup Database (Optional)
 - **Lookup/Config Database**: Database for inc_log watermark table
-- **Default**: `mck_references` (will be used if not specified)
+- **Default**: `config_db` (will be used if not specified)
 
 ---
 
@@ -223,20 +223,20 @@ During processing, I will report:
 ```
 Parsing table names...
 ✅ Found 5 tables to process:
-  1. mck_src.klaviyo_events
-  2. mck_src.shopify_products
-  3. mck_src.onetrust_profiles
-  4. mck_src.klaviyo_lists (FULL LOAD)
-  5. mck_src.users
+  1. client_src.klaviyo_events
+  2. client_src.shopify_products
+  3. client_src.onetrust_profiles
+  4. client_src.klaviyo_lists (FULL LOAD)
+  5. client_src.users
 ```
 
 ### Phase 2: Schema Retrieval
 ```
 Retrieving schemas via MCP tool...
-✅ Got schema for mck_src.klaviyo_events (inc)
-✅ Got schema for mck_src.klaviyo_events_hist (hist)
-✅ Got schema for mck_src.shopify_products (inc)
-✅ Got schema for mck_src.shopify_products_hist (hist)
+✅ Got schema for client_src.klaviyo_events (inc)
+✅ Got schema for client_src.klaviyo_events_hist (hist)
+✅ Got schema for client_src.shopify_products (inc)
+✅ Got schema for client_src.shopify_products_hist (hist)
 ... (all tables)
 ```
 
@@ -365,10 +365,10 @@ All tables: ~10 minutes (depending on slowest table)
 ### Input
 ```
 Create hist-union for these tables:
-- mck_src.klaviyo_events
-- mck_src.shopify_products_hist
-- mck_src.onetrust_profiles
-- mck_src.klaviyo_lists
+- client_src.klaviyo_events
+- client_src.shopify_products_hist
+- client_src.onetrust_profiles
+- client_src.klaviyo_lists
 ```
 
 ### Output Summary
@@ -376,25 +376,25 @@ Create hist-union for these tables:
 ✅ Processed 4 tables:
 
 1. klaviyo_events (Incremental - Case 1: Identical schemas)
-   - Inc: mck_src.klaviyo_events
-   - Hist: mck_src.klaviyo_events_hist
-   - Target: mck_src.klaviyo_events_histunion
+   - Inc: client_src.klaviyo_events
+   - Hist: client_src.klaviyo_events_hist
+   - Target: client_src.klaviyo_events_histunion
 
 2. shopify_products (Incremental - Case 2: Inc has extra columns)
-   - Inc: mck_src.shopify_products
-   - Hist: mck_src.shopify_products_hist
-   - Target: mck_src.shopify_products_histunion
+   - Inc: client_src.shopify_products
+   - Hist: client_src.shopify_products_hist
+   - Target: client_src.shopify_products_histunion
    - Extra columns in inc: incremental_date
 
 3. onetrust_profiles (Incremental - Case 1: Identical schemas)
-   - Inc: mck_src.onetrust_profiles
-   - Hist: mck_src.onetrust_profiles_hist
-   - Target: mck_src.onetrust_profiles_histunion
+   - Inc: client_src.onetrust_profiles
+   - Hist: client_src.onetrust_profiles_hist
+   - Target: client_src.onetrust_profiles_histunion
 
 4. klaviyo_lists (FULL LOAD - Case 3)
-   - Inc: mck_src.klaviyo_lists
-   - Hist: mck_src.klaviyo_lists_hist
-   - Target: mck_src.klaviyo_lists_histunion
+   - Inc: client_src.klaviyo_lists
+   - Hist: client_src.klaviyo_lists_hist
+   - Target: client_src.klaviyo_lists_histunion
 
 Created 4 SQL files + 1 workflow file
 All tasks configured for parallel execution

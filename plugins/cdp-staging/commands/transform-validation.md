@@ -129,7 +129,7 @@ I'll validate your staging transformation files for compliance with CLAUDE.md sp
 
 ### Option 1: Validate Specific Table
 Provide:
-- **Table Name**: e.g., `mck_src.customer_profiles`
+- **Table Name**: e.g., `client_src.customer_profiles`
 - **Engine**: `presto` or `hive`
 
 I will:
@@ -187,7 +187,7 @@ I will verify each gate systematically:
 ```
 ✅ VALIDATION PASSED
 
-Table: mck_src.customer_profiles
+Table: client_src.customer_profiles
 Engine: Presto
 Files validated: 3
 
@@ -218,7 +218,7 @@ No issues found. Transformation is production-ready.
 ```
 ❌ VALIDATION FAILED
 
-Table: mck_src.customer_profiles
+Table: client_src.customer_profiles
 Engine: Presto
 Files validated: 3
 

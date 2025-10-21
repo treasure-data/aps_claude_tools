@@ -18,12 +18,12 @@ Please provide the following details:
 ### 1. Source Tables
 - **Table List**: Comma-separated list of tables (e.g., `table1, table2, table3`)
 - **Format**: `database.table_name` or just `table_name` (if same database)
-- **Example**: `mck_src.customers_histunion, mck_src.orders_histunion, mck_src.products_histunion`
+- **Example**: `client_src.customers_histunion, client_src.orders_histunion, client_src.products_histunion`
 
 ### 2. Source Configuration
-- **Source Database**: Database containing tables (e.g., `mck_src`)
-- **Staging Database**: Target database (default: `mck_stg`)
-- **Lookup Database**: Reference database for rules (default: `mck_references`)
+- **Source Database**: Database containing tables (e.g., `client_src`)
+- **Staging Database**: Target database (default: `client_stg`)
+- **Lookup Database**: Reference database for rules (default: `config_db`)
 
 ### 3. SQL Engine (Optional)
 - **Engine**: Choose one:
@@ -160,7 +160,7 @@ Each sub-agent ensures complete compliance:
 
 ### Example 1: Same Engine (Presto Default)
 ```
-User: Transform tables: mck_src.customers_histunion, mck_src.orders_histunion, mck_src.products_histunion
+User: Transform tables: client_src.customers_histunion, client_src.orders_histunion, client_src.products_histunion
 
 → Parallel execution with 3 staging-transformer-presto agents
 → All files to staging/ directory
@@ -170,7 +170,7 @@ User: Transform tables: mck_src.customers_histunion, mck_src.orders_histunion, m
 
 ### Example 2: Same Engine (Hive Explicit)
 ```
-User: Transform tables using Hive: mck_src.events_histunion, mck_src.profiles_histunion
+User: Transform tables using Hive: client_src.events_histunion, client_src.profiles_histunion
 
 → Parallel execution with 2 staging-transformer-hive agents
 → All files to staging_hive/ directory
@@ -255,7 +255,7 @@ If all tables fail:
 4. **Monitor All Tables**:
    ```sql
    SELECT table_name, inc_value, project_name
-   FROM mck_references.inc_log
+   FROM config_db.inc_log
    WHERE table_name IN ('table1', 'table2', 'table3')
    ORDER BY inc_value DESC
    ```
@@ -291,5 +291,5 @@ All batch transformations will:
 
 **Format Examples:**
 - `Transform tables: table1, table2, table3` (same database)
-- `Transform mck_src.table1, mck_src.table2` (explicit database)
+- `Transform client_src.table1, client_src.table2` (explicit database)
 - `Transform table1 using Hive, table2 using Presto` (mixed engines)
