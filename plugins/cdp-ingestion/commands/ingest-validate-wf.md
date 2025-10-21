@@ -49,6 +49,7 @@ I'll validate your ingestion workflow for compliance with production standards a
 - ✅ Matches `docs/patterns/incremental-patterns.md`
 
 #### 6. Workflow Structure
+- ✅ Must match `docs/patterns/workflow-patterns.md`
 - ✅ Proper timezone declaration (`timezone: UTC`)
 - ✅ Correct `_export` includes
 - ✅ Proper task naming conventions
