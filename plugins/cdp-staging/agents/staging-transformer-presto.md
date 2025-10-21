@@ -1,6 +1,6 @@
 ---
 name: staging-transformer-presto
-description: Use this agent when you need to batch transform multiple raw database tables according to staging transformation specifications. This agent is specifically designed for processing lists of tables from source databases and applying comprehensive data cleaning, standardization, and quality improvements. Examples: <example>Context: User wants to transform multiple tables from a source database using staging transformation rules. user: "Transform these tables: indresh_test.customer_profiles, indresh_test.inventory_data, indresh_test.purchase_history" assistant: "I'll use the staging-transformer-presto agent to process these tables according to the CLAUDE.md specifications" <commentary>Since the user is requesting transformation of multiple tables, use the staging-transformer-presto agent to handle the batch processing with complete CLAUDE.md compliance.</commentary></example> <example>Context: User has a list of raw tables that need staging transformation. user: "Please process all tables from source_db: table1, table2, table3, table4, table5" assistant: "I'll launch the staging-transformer-presto agent to handle this batch transformation" <commentary>Multiple tables require transformation, so use the staging-transformer-presto agent for efficient batch processing.</commentary></example>
+description: Use this agent when you need to batch transform multiple raw database tables according to staging transformation specifications. This agent is specifically designed for processing lists of tables from source databases and applying comprehensive data cleaning, standardization, and quality improvements. Examples: <example>Context: User wants to transform multiple tables from a source database using staging transformation rules. user: "Transform these tables: demo_db.customer_profiles, demo_db.inventory_data, demo_db.purchase_history" assistant: "I'll use the staging-transformer-presto agent to process these tables according to the CLAUDE.md specifications" <commentary>Since the user is requesting transformation of multiple tables, use the staging-transformer-presto agent to handle the batch processing with complete CLAUDE.md compliance.</commentary></example> <example>Context: User has a list of raw tables that need staging transformation. user: "Please process all tables from source_db: table1, table2, table3, table4, table5" assistant: "I'll launch the staging-transformer-presto agent to handle this batch transformation" <commentary>Multiple tables require transformation, so use the staging-transformer-presto agent for efficient batch processing.</commentary></example>
 model: sonnet
 color: blue
 ---
@@ -114,7 +114,7 @@ When receiving transformation requests for `{input_db}.{input_table}`:
 
 4. **PROCESSING CONTINUATION** (only if table exists):
    - **Set Variables**: `source_database = input_db` and `source_table = input_table` and
-        if user doesn't specifies. set `lkup_db = mck_references` and set `staging_databse = mck_stg` by default.
+        if user doesn't specifies. set `lkup_db = client_config` and set `staging_databse = client_stg` by default.
    - **Config Query**: Always use this EXACT SQL for additional rules:
      ```sql
      SELECT db_name, table_name, partition_columns, order_by_columns, additional_rules
@@ -124,10 +124,10 @@ When receiving transformation requests for `{input_db}.{input_table}`:
    - **Isolation**: This ensures ONLY rules for the specific table are retrieved, avoiding cross-table contamination
 
 ### Available Database Tools
-- `mck_mcc_references__query` - Execute Trino queries for validation and data sampling
-- `mck_mcc_references__describe_table` - Get column metadata
-- `mck_mcc_references__list_tables` - List available tables
-- `mck_mcc_references__use_database` - Switch database context
+- `mcp__demo_treasuredata__query` - Execute Trino queries for validation and data sampling
+- `mcp__demo_treasuredata__describe_table` - Get column metadata
+- `mcp__demo_treasuredata__list_tables` - List available tables
+- `mcp__demo_treasuredata__use_database` - Switch database context
 
 ## Critical Constraints & Rules
 
@@ -202,7 +202,7 @@ The `additional_rules` retrieved using the EXACT config query is **HIGH PRIORITY
 ### 6. Validation & Error Handling (MANDATORY CHECKLIST)
 **CRITICAL**: Execute ALL validation steps before final output:
 
-- **SQL Execution Test**: `mck_mcc_references__query({Generated_SQL} LIMIT 1)` must succeed
+- **SQL Execution Test**: `mcp__demo_treasuredata__query({Generated_SQL} LIMIT 1)` must succeed
 - **Date Column Validation (CRITICAL)**:
   - Verify EVERY date column has ALL 4 outputs (original, _std, _unixtime, _date)
   - **🚨 CRITICAL EXCEPTION**: Verify `time` column is NOT transformed (keep as `time AS time`)
@@ -759,7 +759,7 @@ dependency_groups:
     depends_on: []
     tables:
       - name: customer_profiles_histunion
-        source_db: indresh_test
+        source_db: demo_db
         staging_table: customer_profiles
         has_dedup: true
         partition_columns: customer_id
@@ -770,7 +770,7 @@ dependency_groups:
     depends_on: ["wave1_base"]
     tables:
       - name: orders_histunion
-        source_db: indresh_test
+        source_db: demo_db
         staging_table: orders
         has_dedup: false
         partition_columns: null
@@ -783,8 +783,8 @@ dependency_groups:
 When using the DIG template, you MUST replace these placeholder variables with actual values:
 
 **Database Variables:**
-- `{staging_database}` → Replace with actual staging database name (e.g., `mck_stg`)
-- `{source_database}` → Replace with actual source database name (e.g., `mck_src`)
+- `{staging_database}` → Replace with actual staging database name (e.g., `client_stg`)
+- `{source_database}` → Replace with actual source database name (e.g., `client_src`)
 
 **Table Variables:**
 - `{source_table}` → Replace with source table name (e.g., `customer_histunion`)

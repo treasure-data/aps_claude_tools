@@ -16,12 +16,12 @@ I'll help you transform a database table to staging format using the appropriate
 Please provide the following details:
 
 ### 1. Source Table
-- **Database Name**: Source database (e.g., `mck_src`, `indresh_test`)
+- **Database Name**: Source database (e.g., `client_src`, `demo_db`)
 - **Table Name**: Source table name (e.g., `customer_profiles_histunion`)
 
 ### 2. Target Configuration
-- **Staging Database**: Target database (default: `mck_stg`)
-- **Lookup Database**: Reference database for rules (default: `mck_references`)
+- **Staging Database**: Target database (default: `client_stg`)
+- **Lookup Database**: Reference database for rules (default: `client_config`)
 
 ### 3. SQL Engine (Optional)
 - **Engine**: Choose one:
@@ -30,7 +30,7 @@ Please provide the following details:
   - If not specified, will default to Presto/Trino
 
 ### 4. Transformation Requirements (Optional)
-- **Deduplication**: Required? (will check config_db.staging_trnsfrm_rules)
+- **Deduplication**: Required? (will check client_config.staging_trnsfrm_rules)
 - **JSON Columns**: Will auto-detect and process
 - **Join Logic**: Any joins needed? (will check additional_rules)
 
@@ -115,7 +115,7 @@ The sub-agent ensures complete compliance with all requirements:
 
 ### Example 1: Presto Engine (Default)
 ```
-User: Transform table mck_src.customer_profiles_histunion
+User: Transform table client_src.customer_profiles_histunion
 → Engine: Presto (default)
 → Sub-agent: staging-transformer-presto
 → Output: staging/ directory files
@@ -123,7 +123,7 @@ User: Transform table mck_src.customer_profiles_histunion
 
 ### Example 2: Hive Engine (Explicit)
 ```
-User: Transform table mck_src.klaviyo_events_histunion using Hive
+User: Transform table client_src.klaviyo_events_histunion using Hive
 → Engine: Hive
 → Sub-agent: staging-transformer-hive
 → Output: staging_hive/ directory files
@@ -131,9 +131,9 @@ User: Transform table mck_src.klaviyo_events_histunion using Hive
 
 ### Example 3: With Custom Databases
 ```
-User: Transform indresh_test.orders_histunion
-      Use indresh_test_staging as staging database
-      Use indresh_references for lookup
+User: Transform demo_db.orders_histunion
+      Use demo_db_stg as staging database
+      Use client_config for lookup
 → Engine: Presto (default)
 → Custom databases applied
 ```
@@ -163,7 +163,7 @@ User: Transform indresh_test.orders_histunion
 
 4. **Monitor execution**:
    ```sql
-   SELECT * FROM mck_references.inc_log
+   SELECT * FROM client_config.inc_log
    WHERE table_name = '{your_table}'
    ORDER BY inc_value DESC
    LIMIT 1

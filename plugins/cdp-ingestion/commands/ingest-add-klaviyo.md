@@ -49,7 +49,7 @@ Please provide the following information:
    - Example: `2023-09-01T00:00:00.000000`
 
 ### Optional
-4. **Target Database**: Default is `mck_src` (leave blank to use default)
+4. **Target Database**: Default is `client_src` (leave blank to use default)
 
 ---
 
@@ -114,7 +114,8 @@ Before delivering, I will verify:
 
 ### 1. Upload Credentials
 ```bash
-cd /Users/indreshkumar/Desktop/work/projects/CLIENT/dev/workflow_projects/ingestion_main/ingestion
+# Navigate to your ingestion directory
+cd ingestion/
 td wf secrets --project ingestion --set @credentials_ingestion.json
 ```
 
@@ -136,7 +137,7 @@ td wf run klaviyo_ingest_inc.dig
 
 ### 5. Monitor Ingestion
 ```sql
-SELECT * FROM mck_src.ingestion_log
+SELECT * FROM client_src.ingestion_log
 WHERE source_name LIKE 'klaviyo%'
 ORDER BY time DESC
 LIMIT 20

@@ -506,7 +506,7 @@ Configure Shopify v1 authentication in TD Console:
    SELECT
      MAX(updated_at) as last_update,
      MIN(updated_at) as first_update
-   FROM mck_src.shopify_customers
+   FROM client_src.shopify_customers
    ```
 
 3. **Check batch processing status:**
@@ -518,7 +518,7 @@ Configure Shopify v1 authentication in TD Console:
      start_time,
      end_time,
      records_processed
-   FROM mck_src.ingestion_log
+   FROM client_src.ingestion_log
    WHERE workflow_name = 'shopify_v1_ingest'
    ORDER BY time DESC
    LIMIT 20

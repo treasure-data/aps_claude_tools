@@ -50,7 +50,7 @@ FIX: Re-run the unification-staging-enricher agent
 
 #### 2.1 Validate unif_runner.dig
 
-**Read**: `/Users/indreshkumar/Desktop/work/projects/TD_PS_GitHub/aps_claude_tools/plugins/cdp-unification/prompt.md` lines 184-217
+**Read**: `plugins/cdp-unification/prompt.md` lines 184-217
 
 **Check:**
 1. Line 1: `timezone: UTC` (exact match)
@@ -72,14 +72,14 @@ FIX: Update to use require> operator as per prompt.md template
 
 #### 2.2 Validate stage_enrich.yml
 
-**Read**: `/Users/indreshkumar/Desktop/work/projects/TD_PS_GitHub/aps_claude_tools/unification/config/src_prep_params.yml`
+**Read**: `unification/config/src_prep_params.yml`
 
 **Extract:**
 - All `alias_as` values (e.g., email, user_id, phone)
 - All `col.name` values (e.g., email_address_std, phone_number_std)
 - `src_tbl` value (e.g., snowflake_orders)
 
-**Read**: `/Users/indreshkumar/Desktop/work/projects/TD_PS_GitHub/aps_claude_tools/unification/config/stage_enrich.yml`
+**Read**: `unification/config/stage_enrich.yml`
 
 **RULE 1 - Validate unif_input table:**
 ```yaml
@@ -110,7 +110,7 @@ FIX: Apply RULE 2 - staging tables use col.name → alias_as mapping
 
 #### 2.3 Validate enrich_runner.dig
 
-**Read**: `/Users/indreshkumar/Desktop/work/projects/TD_PS_GitHub/aps_claude_tools/plugins/cdp-unification/agents/unification-staging-enricher.md` lines 261-299
+**Read**: `plugins/cdp-unification/agents/unification-staging-enricher.md` lines 261-299
 
 **Check exact match** for:
 - Line 1-4: `_export:` with 3 includes + td.database
@@ -132,7 +132,7 @@ FIX: Regenerate using unification-staging-enricher agent
 ### Step 3: Database & Table Existence Validation
 
 **Read environment.yml** to get:
-- `client_short_name` (e.g., ik_claude)
+- `client_short_name` (e.g., client)
 - `src`, `stg`, `gld`, `lkup` suffixes
 
 **Read unify.yml** to get:
@@ -143,10 +143,10 @@ FIX: Regenerate using unification-staging-enricher agent
 ```python
 # Check databases exist
 databases_to_check = [
-    f"{client_short_name}_{src}",      # e.g., ik_claude_src
-    f"{client_short_name}_{stg}",      # e.g., ik_claude_stg
-    f"{client_short_name}_{gld}",      # e.g., ik_claude_gld
-    f"{client_short_name}_{lkup}",     # e.g., ik_claude_references
+    f"{client_short_name}_{src}",      # e.g., client_src
+    f"{client_short_name}_{stg}",      # e.g., client_stg
+    f"{client_short_name}_{gld}",      # e.g., client_gld
+    f"{client_short_name}_{lkup}",     # e.g., client_config
     f"cdp_unification_{unif_name}"      # e.g., cdp_unification_customer_360
 ]
 
@@ -186,7 +186,7 @@ prep_tbls:
 **For each prep table:**
 ```python
 table_name = prep_tbl["src_tbl"]
-database = resolve_vars(prep_tbl["src_db"])  # e.g., ik_claude_stg
+database = resolve_vars(prep_tbl["src_db"])  # e.g., client_stg
 
 result = mcp__demo_treasuredata__describe_table(
     table=table_name,
@@ -325,8 +325,8 @@ Next Steps:
      FIX: Apply RULE 2 for staging tables
 
 [3/5] Database & Table Existence .... ❌ FAIL (1 error)
-  ❌ ik_claude_references.exclusion_list does NOT exist
-     FIX: td query -d ik_claude_references -t presto -w "CREATE TABLE IF NOT EXISTS exclusion_list (key_value VARCHAR, key_name VARCHAR, tbls ARRAY(VARCHAR), note VARCHAR)"
+  ❌ client_config.exclusion_list does NOT exist
+     FIX: td query -d client_config -t presto -w "CREATE TABLE IF NOT EXISTS exclusion_list (key_value VARCHAR, key_name VARCHAR, tbls ARRAY(VARCHAR), note VARCHAR)"
 
 [4/5] Configuration Validation ...... ✅ PASS (8/8 checks)
 [5/5] YAML Syntax Check ............. ✅ PASS (4/4 files)

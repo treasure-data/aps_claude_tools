@@ -120,7 +120,7 @@ tables:
     key_columns:
       - {column: email_std, key: email}
       - {column: customer_id, key: customer_id}
-  - table: customer_staging
+  - table: customer
     key_columns:
       - {column: email, key: email}
   - table: orders

@@ -371,7 +371,7 @@ keys:
 #####################################################
 tables:
   - database: customer_db
-    table: customer_profiles_staging
+    table: customer_profiles
     key_columns:
       - {column: email_std, key: email}
       - {column: customer_id, key: customer_id}
@@ -406,14 +406,14 @@ master_tables:
       # Single value with priority
       - name: primary_email
         source_columns:
-          - {table: customer_profiles_staging, column: email_std, order: last, order_by: time, priority: 1}
+          - {table: customer_profiles, column: email_std, order: last, order_by: time, priority: 1}
           - {table: customer_transactions, column: customer_email, order: last, order_by: time, priority: 2}
 
       # Array of values (top N)
       - name: all_emails
         array_elements: 5
         source_columns:
-          - {table: customer_profiles_staging, column: email_std, order: last, order_by: time, priority: 1}
+          - {table: customer_profiles, column: email_std, order: last, order_by: time, priority: 1}
           - {table: customer_transactions, column: customer_email, order: last, order_by: time, priority: 2}
           - {table: web_sessions, column: user_email, order: last, order_by: time, priority: 3}
 
@@ -425,7 +425,7 @@ master_tables:
       # Customer ID
       - name: customer_id
         source_columns:
-          - {table: customer_profiles_staging, column: customer_id, order: last, order_by: time, priority: 1}
+          - {table: customer_profiles, column: customer_id, order: last, order_by: time, priority: 1}
 ```
 
 ### YAML Sections Explained
@@ -727,7 +727,7 @@ SELECT
     COUNT(*) AS total_records,
     COUNT(unified_customer_id) AS with_canonical_id,
     ROUND(100.0 * COUNT(unified_customer_id) / COUNT(*), 2) AS coverage_pct
-FROM customer_db.customer_profiles_staging
+FROM customer_db.customer_profiles
 
 UNION ALL
 

@@ -393,7 +393,7 @@ Add to `credentials_ingestion.json`:
 
 4. **Check ingestion log:**
    ```sql
-   SELECT * FROM mck_src.ingestion_log
+   SELECT * FROM client_src.ingestion_log
    WHERE source_name = 'pinterest'
    ORDER BY time DESC
    LIMIT 10

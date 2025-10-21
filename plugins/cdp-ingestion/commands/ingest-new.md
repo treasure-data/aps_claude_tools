@@ -41,7 +41,7 @@ Please provide the following details:
   - Username/password?
 
 ### 6. Database Target
-- **Target Database**: Which Treasure Data database? (default: `mck_src`)
+- **Target Database**: Which Treasure Data database? (default: `client_src`)
 
 ---
 
@@ -125,7 +125,7 @@ I will generate:
 
 4. **Monitor ingestion log**:
    ```sql
-   SELECT * FROM mck_src.ingestion_log
+   SELECT * FROM client_src.ingestion_log
    WHERE source_name = '{source}'
    ORDER BY time DESC
    LIMIT 10

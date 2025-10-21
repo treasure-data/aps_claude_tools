@@ -440,7 +440,7 @@ Load multiple files one after another:
 
 5. **Check ingestion log:**
    ```sql
-   SELECT * FROM mck_src.ingestion_log
+   SELECT * FROM client_src.ingestion_log
    WHERE source_name = '{source}'
    ORDER BY time DESC
    LIMIT 10

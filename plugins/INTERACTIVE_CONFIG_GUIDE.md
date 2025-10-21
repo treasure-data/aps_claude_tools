@@ -31,7 +31,7 @@ ELSE → Begin full interactive collection
 ### Rule 3: Offer Intelligent Defaults
 Always suggest sensible defaults in parentheses.
 
-**Example**: "What's the target database? (default: `mck_src`)"
+**Example**: "What's the target database? (default: `client_src`)"
 
 ---
 
@@ -42,7 +42,7 @@ Always suggest sensible defaults in parentheses.
 2. **connector_type** - TD connector (e.g., `snowflake`, `salesforce`)
 3. **tables** - Comma-separated tables/objects
 4. **mode** - `incremental`, `historical`, or `both`
-5. **target_database** - TD database (default: `mck_src`)
+5. **target_database** - TD database (default: `client_src`)
 
 ### Conditional Parameters
 **IF mode = incremental OR both**:
@@ -57,8 +57,8 @@ Always suggest sensible defaults in parentheses.
 ## PLUGIN 2: CDP-Hist-Union
 
 ### Required Parameters
-1. **table_name** - Base table (e.g., `mck_src.klaviyo_events`)
-2. **lookup_database** - Watermark DB (default: `mck_references`)
+1. **table_name** - Base table (e.g., `client_src.klaviyo_events`)
+2. **lookup_database** - Watermark DB (default: `client_config`)
 
 ---
 
@@ -66,9 +66,9 @@ Always suggest sensible defaults in parentheses.
 
 ### Required Parameters
 1. **table_list** - Comma-separated tables
-2. **source_database** - Source DB (e.g., `mck_src`)
-3. **staging_database** - Target DB (default: `mck_stg`)
-4. **lookup_database** - Reference DB (default: `mck_references`)
+2. **source_database** - Source DB (e.g., `client_src`)
+3. **staging_database** - Target DB (default: `client_stg`)
+4. **lookup_database** - Reference DB (default: `client_config`)
 5. **sql_engine** - `presto` (default) or `hive`
 
 ---
@@ -76,14 +76,14 @@ Always suggest sensible defaults in parentheses.
 ## PLUGIN 4: CDP-Unification
 
 ### Required Parameters
-1. **client_short_name** - Client identifier (e.g., `ik_claude`, `mck`)
+1. **client_short_name** - Client identifier (e.g., `client`, `mck`)
 2. **name** - Unification name (e.g., `customer_360`)
 3. **id_method** - `persistent_id` or `canonical_id`
 4. **update_strategy** - `incremental` or `full`
 5. **tables** - Comma-separated staging tables
 6. **regional_endpoint** - TD API endpoint
-7. **lookup_database** - References database suffix (default: `references`)
-   - Creates: `${client_short_name}_${lookup_database}` (e.g., `ik_claude_references`)
+7. **lookup_database** - Config database suffix (default: `config`)
+   - Creates: `${client_short_name}_${lookup_database}` (e.g., `client_config`)
    - **MUST CREATE** this database before workflow execution
 
 ---

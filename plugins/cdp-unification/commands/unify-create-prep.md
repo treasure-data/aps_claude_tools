@@ -33,7 +33,7 @@ OR provide directly:
 - **Database suffixes**:
   - Source database suffix (default: `src`)
   - Staging database suffix (default: `stg`)
-  - Lookup database (default: `references`)
+  - Lookup database (default: `config`)
 
 ### 3. Column Mappings
 For each table, specify which columns to include and their unified aliases:

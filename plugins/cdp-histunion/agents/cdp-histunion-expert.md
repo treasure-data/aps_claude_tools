@@ -55,14 +55,14 @@ Create hist-union workflows that combine historical and incremental table data i
 ### Step 1: Parse User Input
 Parse and derive exact table names:
 ```
-Example input: "mck_src.shopify_products_hist"
+Example input: "client_src.shopify_products_hist"
 
 Parse:
-- database: mck_src
+- database: client_src
 - base_name: shopify_products (remove _hist suffix)
-- inc_table: mck_src.shopify_products
-- hist_table: mck_src.shopify_products_hist
-- target_table: mck_src.shopify_products_histunion
+- inc_table: client_src.shopify_products
+- hist_table: client_src.shopify_products_hist
+- target_table: client_src.shopify_products_histunion
 ```
 
 ### Step 2: Get Table Schemas via MCP & Handle Missing Tables
@@ -214,7 +214,7 @@ Use ONLY for klaviyo_lists and klaviyo_metric_data:
 
 ### Workflow Configuration
 - **WRAP** hist_union tasks in `_parallel: true` block
-- **USE** {lkup_db} variable (default: mck_references)
+- **USE** {lkup_db} variable (default: client_config)
 - **REMOVE** any schedule blocks from workflow
 - **NAME** SQL files after base table name (not hist or histunion)
 
@@ -229,8 +229,8 @@ Use ONLY for klaviyo_lists and klaviyo_metric_data:
 ## Full Load Tables
 
 **ONLY these tables use FULL LOAD (Case 3):**
-- `mck_src.klaviyo_lists_histunion`
-- `mck_src.klaviyo_metric_data_histunion`
+- `client_src.klaviyo_lists_histunion`
+- `client_src.klaviyo_metric_data_histunion`
 
 **All other tables use INCREMENTAL processing (Case 1 or 2)**
 
@@ -263,7 +263,7 @@ Before delivering code, verify ALL gates pass:
 | **Watermarks** | Both hist and inc updates present |
 | **Parallel Config** | _parallel: true wrapper present |
 | **No Schedule** | Schedule block removed |
-| **Correct lkup_db** | mck_references or user-specified |
+| **Correct lkup_db** | client_config or user-specified |
 
 **IF ANY GATE FAILS: Get schemas again and regenerate.**
 

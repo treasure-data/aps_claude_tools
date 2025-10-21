@@ -26,10 +26,10 @@ Please provide the list of tables you want to include in ID unification:
 - I'll analyze each table using Treasure Data MCP tools to extract user identifiers
 
 ### 2. Client Configuration
-- **Client short name**: Your client identifier (e.g., `mck`, `ik_claude`)
+- **Client short name**: Your client identifier (e.g., `mck`, `client`)
 - **Unification name**: Name for this unification project (e.g., `claude`, `customer_360`)
-- **Lookup/References database suffix**: (default: `references`)
-  - Creates database: `${client_short_name}_${lookup_suffix}` (e.g., `ik_claude_references`)
+- **Lookup/Config database suffix**: (default: `config`)
+  - Creates database: `${client_short_name}_${lookup_suffix}` (e.g., `client_config`)
   - ⚠️ **I WILL CREATE THIS DATABASE** if it doesn't exist
 
 ### 3. ID Method Selection

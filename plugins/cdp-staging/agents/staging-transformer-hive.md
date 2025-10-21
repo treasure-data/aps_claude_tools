@@ -1,6 +1,6 @@
 ---
 name: staging-transformer-hive
-description: Use this agent when you need to batch transform multiple raw database tables according to staging transformation specifications using HIVE SQL ENGINE. This agent is specifically designed for processing lists of tables from source databases and applying comprehensive data cleaning, standardization, and quality improvements using error-free Hive SQL. Examples: <example>Context: User wants to transform multiple tables from a source database using staging transformation rules with Hive engine. user: "Transform these tables using Hive: indresh_test.customer_profiles, indresh_test.inventory_data, indresh_test.purchase_history" assistant: "I'll use the staging-transformer-hive agent to process these tables according to the CLAUDE.md specifications with Hive-compatible SQL" <commentary>Since the user is requesting transformation of multiple tables using Hive engine, use the staging-transformer-hive agent to handle the batch processing with complete CLAUDE.md compliance and Hive SQL compatibility.</commentary></example> <example>Context: User has a list of raw tables that need staging transformation using Hive engine. user: "Please process all tables from source_db using Hive: table1, table2, table3, table4, table5" assistant: "I'll launch the staging-transformer-hive agent to handle this batch transformation with Hive SQL" <commentary>Multiple tables require transformation with Hive engine, so use the staging-transformer-hive agent for efficient batch processing with Hive-compatible SQL.</commentary></example>
+description: Use this agent when you need to batch transform multiple raw database tables according to staging transformation specifications using HIVE SQL ENGINE. This agent is specifically designed for processing lists of tables from source databases and applying comprehensive data cleaning, standardization, and quality improvements using error-free Hive SQL. Examples: <example>Context: User wants to transform multiple tables from a source database using staging transformation rules with Hive engine. user: "Transform these tables using Hive: demo_db.customer_profiles, demo_db.inventory_data, demo_db.purchase_history" assistant: "I'll use the staging-transformer-hive agent to process these tables according to the CLAUDE.md specifications with Hive-compatible SQL" <commentary>Since the user is requesting transformation of multiple tables using Hive engine, use the staging-transformer-hive agent to handle the batch processing with complete CLAUDE.md compliance and Hive SQL compatibility.</commentary></example> <example>Context: User has a list of raw tables that need staging transformation using Hive engine. user: "Please process all tables from source_db using Hive: table1, table2, table3, table4, table5" assistant: "I'll launch the staging-transformer-hive agent to handle this batch transformation with Hive SQL" <commentary>Multiple tables require transformation with Hive engine, so use the staging-transformer-hive agent for efficient batch processing with Hive-compatible SQL.</commentary></example>
 model: sonnet
 color: green
 ---
@@ -134,7 +134,7 @@ When receiving transformation requests for `{input_db}.{input_table}` using Hive
 
 4. **PROCESSING CONTINUATION** (only if table exists):
    - **Set Variables**: `source_database = input_db` and `source_table = input_table` and
-         if user doesn't specifies. set `lkup_db = mck_references` and set `staging_database = mck_stg` by default.
+         if user doesn't specifies. set `lkup_db = client_config` and set `staging_database = client_stg` by default.
    - **Config Query**: Always use this EXACT SQL for additional rules:
      ```sql
      SELECT db_name, table_name, partition_columns, order_by_columns, additional_rules
@@ -542,9 +542,9 @@ If these files don't exist, create them exactly as specified:
 
 #### **File 1: `staging_hive/config/database.yml`** (FIRST TIME ONLY)
 ```yaml
-src: mck_src
-stg: mck_stg
-gld: mck_gld
+src: client_src
+stg: client_stg
+gld: client_gld
 ```
 
 #### **File 2: `staging_hive/config/src_params.yml`** (CREATE FIRST TIME, UPDATE EACH NEW TABLE)
@@ -562,7 +562,7 @@ dependency_groups:
     parallel: true
     depends_on: []
     tables:
-      - query_name: {input_table without _histunion} # eg. input_table = mck_src.klaviyo_events_histunion then  use 'mck_src_klaviyo_events'
+      - query_name: {input_table without _histunion} # eg. input_table = client_src.klaviyo_events_histunion then  use 'client_src_klaviyo_events'
         project_name: staging
         src_inc_tbl: ${query_name remove database}
         src_hist_tbl: ${query_name remove database}_hist
