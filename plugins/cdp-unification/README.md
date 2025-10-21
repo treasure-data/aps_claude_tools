@@ -417,7 +417,7 @@ UN003      | bob@email.com   | [U003]           | 1
 
 **Inputs:**
 ```
-Database: ecommerce_staging
+Database: ecommerce_stg
 Tables: customer_profiles, order_history, email_subscriptions
 Keys: email, phone, user_id
 Master table: unified_customers

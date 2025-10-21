@@ -3,11 +3,358 @@
 This document contains ready-to-use MCP queries for the prerequisite-validator skill.
 
 ## Table of Contents
+0. [Client Name Validation Queries](#client-name-validation-queries) **← NEW CRITICAL**
 1. [Database Connectivity Queries](#database-connectivity-queries)
 2. [Table Validation Queries](#table-validation-queries)
 3. [Schema Analysis Queries](#schema-analysis-queries)
 4. [Data Quality Queries](#data-quality-queries)
 5. [Identifier Discovery Queries](#identifier-discovery-queries)
+
+---
+
+## Client Name Validation Queries
+
+### Query 0.1: List All Databases to Validate Client Configuration
+
+**MCP Tool**: `mcp__demo_treasuredata__list_databases`
+
+**Purpose**: Verify client databases exist before workflow generation
+
+**Usage**:
+```python
+# Get all available databases
+all_databases = mcp__demo_treasuredata__list_databases()
+
+# Example response:
+# {
+#   "databases": ["acme_src", "acme_stg", "nike_src", "config_db", ...]
+# }
+
+# Validate client databases exist
+client = "acme"  # extracted from user input
+expected_databases = {
+    "source": f"{client}_src",      # acme_src
+    "staging": f"{client}_stg",     # acme_stg
+    "config": "config_db"           # shared
+}
+
+validation_results = {}
+for db_type, db_name in expected_databases.items():
+    validation_results[db_type] = {
+        "name": db_name,
+        "exists": db_name in all_databases["databases"]
+    }
+
+# Output results
+for db_type, info in validation_results.items():
+    if info["exists"]:
+        print(f"✅ {info['name']} exists")
+    else:
+        print(f"❌ {info['name']} does not exist - needs creation")
+```
+
+**Expected Output**:
+```
+✅ acme_src exists
+✅ acme_stg exists
+✅ config_db exists
+```
+
+### Query 0.2: Count Tables in Client Databases
+
+**MCP Tool**: `mcp__demo_treasuredata__list_tables`
+
+**Purpose**: Show database activity/usage
+
+**Usage**:
+```python
+client = "acme"
+
+# Check source database
+source_tables = mcp__demo_treasuredata__list_tables(
+    database=f"{client}_src"
+)
+
+# Check staging database
+staging_tables = mcp__demo_treasuredata__list_tables(
+    database=f"{client}_stg"
+)
+
+print(f"Source database ({client}_src): {len(source_tables['tables'])} tables")
+print(f"Staging database ({client}_stg): {len(staging_tables['tables'])} tables")
+```
+
+**Expected Output**:
+```
+Source database (acme_src): 45 tables
+Staging database (acme_stg): 23 tables
+```
+
+### Query 0.3: Detect Generic Database Names (Python Logic)
+
+**Purpose**: Block usage of documentation example names
+
+**Implementation**:
+```python
+def is_generic_database_name(database_name):
+    """
+    Check if database name is a documentation example
+    that should NOT be used in production
+    """
+    GENERIC_DATABASES = [
+        "client_src",
+        "client_stg",
+        "demo_db",
+        "demo_db_stg",
+        "test_db",
+        "sample_db",
+        "example_db"
+    ]
+
+    return database_name in GENERIC_DATABASES
+
+# Usage
+test_names = [
+    "acme_src",        # ✅ Real client
+    "client_src",      # ❌ Generic
+    "demo_db",         # ❌ Generic
+    "nike_stg"         # ✅ Real client
+]
+
+for db in test_names:
+    if is_generic_database_name(db):
+        print(f"❌ REJECT: {db} is a generic name")
+    else:
+        print(f"✅ ACCEPT: {db} is a valid client database")
+```
+
+### Query 0.4: Extract Client Prefix from Database Name (Python Logic)
+
+**Purpose**: Parse client name from database for validation
+
+**Implementation**:
+```python
+def extract_client_from_database(database_name):
+    """
+    Extract client prefix from database name
+
+    Examples:
+        acme_src → "acme"
+        nike_stg → "nike"
+        walmart_staging → "walmart"
+        config_db → "config_db" (no prefix)
+    """
+    # Define known suffixes
+    suffixes = [
+        "_src",
+        "_stg",
+        "_staging",
+        "_raw",
+        "_unification",
+        "_unified"
+    ]
+
+    # Try to match suffix
+    for suffix in suffixes:
+        if database_name.endswith(suffix):
+            client = database_name[:-len(suffix)]
+            return {
+                "client": client,
+                "suffix": suffix,
+                "database": database_name
+            }
+
+    # No suffix found - might be shared database
+    return {
+        "client": database_name,
+        "suffix": None,
+        "database": database_name
+    }
+
+# Usage examples
+test_databases = [
+    "acme_src",
+    "nike_stg",
+    "walmart_staging",
+    "config_db"
+]
+
+for db in test_databases:
+    result = extract_client_from_database(db)
+    print(f"{db} → client: '{result['client']}', suffix: '{result['suffix']}'")
+```
+
+**Expected Output**:
+```
+acme_src → client: 'acme', suffix: '_src'
+nike_stg → client: 'nike', suffix: '_stg'
+walmart_staging → client: 'walmart', suffix: '_staging'
+config_db → client: 'config_db', suffix: 'None'
+```
+
+### Query 0.5: Validate Client Name Format (Python Logic)
+
+**Purpose**: Ensure client name meets requirements
+
+**Implementation**:
+```python
+import re
+
+def validate_client_name(client_name):
+    """
+    Validate client name meets requirements:
+    - Alphanumeric + underscores only
+    - 2-30 characters length
+    - Not in generic blocklist
+    - Not empty
+    """
+    GENERIC_DATABASES = [
+        "client", "demo", "test", "sample", "example",
+        "client_src", "client_stg", "demo_db"
+    ]
+
+    validations = {
+        "not_empty": bool(client_name and client_name.strip()),
+        "alphanumeric_only": bool(re.match(r'^[a-zA-Z0-9_]+$', client_name)) if client_name else False,
+        "reasonable_length": 2 <= len(client_name) <= 30 if client_name else False,
+        "not_generic": client_name not in GENERIC_DATABASES if client_name else False
+    }
+
+    is_valid = all(validations.values())
+    failed_checks = [k for k, v in validations.items() if not v]
+
+    return {
+        "valid": is_valid,
+        "client_name": client_name,
+        "checks": validations,
+        "failed_checks": failed_checks
+    }
+
+# Usage
+test_names = [
+    "acme",           # ✅ Valid
+    "nike",           # ✅ Valid
+    "client",         # ❌ Generic
+    "demo",           # ❌ Generic
+    "a",              # ❌ Too short
+    "this_is_a_very_long_client_name_that_exceeds_limit",  # ❌ Too long
+    "test@client",    # ❌ Invalid characters
+    ""                # ❌ Empty
+]
+
+for name in test_names:
+    result = validate_client_name(name)
+    if result["valid"]:
+        print(f"✅ '{name}' is valid")
+    else:
+        print(f"❌ '{name}' failed: {', '.join(result['failed_checks'])}")
+```
+
+**Expected Output**:
+```
+✅ 'acme' is valid
+✅ 'nike' is valid
+❌ 'client' failed: not_generic
+❌ 'demo' failed: not_generic
+❌ 'a' failed: reasonable_length
+❌ 'this_is_a_very_long_client_name_that_exceeds_limit' failed: reasonable_length
+❌ 'test@client' failed: alphanumeric_only
+❌ '' failed: not_empty, alphanumeric_only, reasonable_length
+```
+
+### Query 0.6: Complete Client Validation Workflow
+
+**Purpose**: End-to-end client name validation
+
+**Complete Implementation**:
+```python
+def validate_client_configuration(user_input):
+    """
+    Complete validation workflow for client configuration
+
+    Steps:
+    1. Parse database names from user input
+    2. Extract client prefix
+    3. Validate client name
+    4. Check if databases exist via MCP
+    5. Return validation report
+    """
+
+    # Step 1: Parse databases from user input
+    import re
+    db_pattern = r'(\w+)\.'  # Matches "database.table"
+    databases_mentioned = re.findall(db_pattern, user_input)
+
+    if not databases_mentioned:
+        return {
+            "status": "info",
+            "message": "No database mentioned. Please provide client name or database.table format."
+        }
+
+    # Step 2: Check for generic names
+    first_db = databases_mentioned[0]
+    if is_generic_database_name(first_db):
+        return {
+            "status": "critical",
+            "error": f"Generic database name detected: {first_db}",
+            "action": "Provide real client name"
+        }
+
+    # Step 3: Extract client
+    client_info = extract_client_from_database(first_db)
+    client = client_info["client"]
+
+    # Step 4: Validate client name
+    validation = validate_client_name(client)
+    if not validation["valid"]:
+        return {
+            "status": "critical",
+            "error": f"Invalid client name: {client}",
+            "failed_checks": validation["failed_checks"]
+        }
+
+    # Step 5: Check databases exist
+    all_databases = mcp__demo_treasuredata__list_databases()
+
+    expected_dbs = {
+        "source": f"{client}_src",
+        "staging": f"{client}_stg",
+        "config": "config_db"
+    }
+
+    db_status = {}
+    for db_type, db_name in expected_dbs.items():
+        exists = db_name in all_databases["databases"]
+        db_status[db_type] = {
+            "name": db_name,
+            "exists": exists
+        }
+
+    # Step 6: Return comprehensive report
+    all_exist = all(info["exists"] for info in db_status.values())
+
+    return {
+        "status": "success" if all_exist else "warning",
+        "client": client,
+        "databases": db_status,
+        "ready": all_exist
+    }
+
+# Usage
+user_message = "Transform acme_src.klaviyo_events_histunion to staging"
+result = validate_client_configuration(user_message)
+
+if result["status"] == "success":
+    print(f"✅ Client '{result['client']}' validated")
+    print(f"✅ All databases exist and ready")
+elif result["status"] == "warning":
+    print(f"⚠️ Client '{result['client']}' validated but some databases missing")
+    for db_type, info in result["databases"].items():
+        status = "✅" if info["exists"] else "❌"
+        print(f"{status} {info['name']}")
+elif result["status"] == "critical":
+    print(f"❌ {result['error']}")
+```
 
 ---
 
@@ -35,7 +382,7 @@ Expected Response:
 {
   "databases": [
     "client_src",
-    "client_staging",
+    "client_stg",
     "client_unification",
     "sample_datasets"
   ]

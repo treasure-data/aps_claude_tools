@@ -467,7 +467,7 @@ td wf sessions --project ingestion_project
   td_load>: load/klaviyo_events.yml
 
 # Then trigger transformation
-+trigger_staging:
++trigger:
   require>: [load_shopify, load_klaviyo]
   td_run>: staging_transformation
 ```

@@ -29,6 +29,55 @@ Automatically trigger when user mentions or requests:
 
 ## Validation Workflow
 
+### Step 0: Client Name & Database Validation (NEW - CRITICAL)
+
+**ALWAYS run this check FIRST before any workflow creation:**
+
+```
+1. Detect database names mentioned by user:
+   - Parse user's message for database references
+   - Identify: source database, staging database, config database
+   - Action: Extract client prefix from database names
+
+2. Check for GENERIC database names (CRITICAL):
+   - ❌ REJECT: "client_src", "client_stg", "demo_db", "demo_db_stg"
+   - ❌ REJECT: Any database matching documentation examples
+   - ✅ ACCEPT: Real client names (e.g., "acme_src", "nike_stg")
+
+3. If GENERIC names detected:
+   - STOP validation immediately
+   - Prompt user for REAL client name:
+     ```
+     ⚠️ GENERIC DATABASE NAME DETECTED
+
+     You mentioned: "{detected_database}"
+
+     This appears to be a documentation example name. For production workflows,
+     please provide your actual client name/prefix.
+
+     Question: What is your client name or prefix?
+     Examples: "acme", "nike", "walmart", "retail_co"
+
+     This will build your databases as:
+     - Source: {client}_src
+     - Staging: {client}_stg
+     - Config: config_db (shared)
+     ```
+   - Wait for user response
+   - Validate provided client name (alphanumeric, underscores only)
+   - Build database names: {client}_src, {client}_stg
+
+4. Verify databases exist using MCP:
+   - Use: mcp__demo_treasuredata__list_databases
+   - Check if {client}_src exists
+   - Check if {client}_stg exists (or inform it will be created)
+   - Action: Report which databases exist vs need creation
+
+5. Store client name for workflow generation:
+   - Pass to slash command context
+   - Ensure all generated files use real client name
+```
+
 ### Step 1: Database Connectivity Check
 
 Use MCP tools to verify TD connection:
@@ -123,18 +172,24 @@ Provide clear, structured validation report:
 ```markdown
 ## 🔍 Prerequisite Validation Report
 
+### ✅ Client Configuration
+- Client name: acme
+- Source database: acme_src (exists ✅)
+- Staging database: acme_stg (exists ✅)
+- Config database: config_db (exists ✅)
+
 ### ✅ Database Connectivity
 - Connection: PASS
 - Current database: {database_name}
 - Available databases: {count} found
 
 ### ✅ Source Tables
-- client_src.klaviyo_events_histunion: PASS (234 columns, 1.2M rows)
-- client_src.klaviyo_profiles_histunion: PASS (156 columns, 450K rows)
-- client_src.shopify_orders_histunion: WARNING - Table empty
+- acme_src.klaviyo_events_histunion: PASS (234 columns, 1.2M rows)
+- acme_src.klaviyo_profiles_histunion: PASS (156 columns, 450K rows)
+- acme_src.shopify_orders_histunion: WARNING - Table empty
 
 ### ✅ Target Database
-- client_staging: PASS (exists, accessible)
+- acme_stg: PASS (exists, accessible)
 
 ### ⚠️ Credentials
 - klaviyo_api_key: NOT VERIFIED (reminder to set)
@@ -161,6 +216,7 @@ Provide clear, structured validation report:
 ## Validation Rules Reference
 
 ### Critical Issues (BLOCK workflow creation)
+- ❌ Generic database name detected (client_src, demo_db, etc.)
 - ❌ Database connection fails
 - ❌ Source table does not exist
 - ❌ Source table has 0 columns (corrupted)

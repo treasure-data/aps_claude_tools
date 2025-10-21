@@ -132,7 +132,7 @@ User: Transform table client_src.klaviyo_events_histunion using Hive
 ### Example 3: With Custom Databases
 ```
 User: Transform demo_db.orders_histunion
-      Use demo_db_staging as staging database
+      Use demo_db_stg as staging database
       Use config_db for lookup
 → Engine: Presto (default)
 → Custom databases applied

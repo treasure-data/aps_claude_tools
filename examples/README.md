@@ -23,15 +23,15 @@ The examples use generic, client-agnostic naming patterns:
 
 ### Database Names
 - `client_src` - Source/raw data database
-- `client_staging` - Staging/transformed data database
+- `client_stg` - Staging/transformed data database
 - `client_unification` - ID unification database
 - `demo_db` - Generic demo database for examples
 
 ### Table Names
 - `{source}_{object}_histunion` - Combined historical + incremental tables
-- `{source}_{object}_staging` - Staging transformed tables
+- `{source}_{object}` - Staging transformed tables
 - `customer_orders` - Generic order table example
-- `customer_profiles_staging` - Generic profile staging table
+- `customer_profiles` - Generic profile staging table
 
 ## Customizing for Your Project
 
@@ -41,7 +41,7 @@ When adapting these examples for a specific client:
 Replace generic names with client-specific prefix:
 ```
 client_src → acme_src
-client_staging → acme_staging
+client_stg → acme_stg
 demo_db → acme_demo
 ```
 
@@ -69,7 +69,7 @@ table: shopify_orders
 
 1. **Use Consistent Prefixes**
    - All databases for a client should share the same prefix
-   - Example: `acme_src`, `acme_staging`, `acme_unification`
+   - Example: `acme_src`, `acme`, `acme_unification`
 
 2. **Include Source System Names**
    - Table names should indicate the source system
@@ -78,7 +78,7 @@ table: shopify_orders
 3. **Use Descriptive Suffixes**
    - `_hist` - Historical full-load data
    - `_histunion` - Combined historical + incremental
-   - `_staging` - Clean, transformed data
+   - `` - Clean, transformed data
    - `_master` - Master unified tables
 
 4. **Avoid Personal Names**
@@ -93,7 +93,7 @@ For a client "Acme Corp" with Shopify and Klaviyo data:
 ```
 Databases:
 - acme_src          (raw ingested data)
-- acme_staging      (transformed data)
+- acme      (transformed data)
 - acme_unification  (unified customer profiles)
 
 Tables in acme_src:
@@ -104,10 +104,10 @@ Tables in acme_src:
 - klaviyo_events_hist
 - klaviyo_events_histunion
 
-Tables in acme_staging:
-- shopify_products_staging
-- klaviyo_events_staging
-- customer_orders_staging
+Tables in acme:
+- shopify_products
+- klaviyo_events
+- customer_orders
 
 Tables in acme_unification:
 - acme_id_master_table

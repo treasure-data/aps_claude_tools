@@ -124,10 +124,10 @@ When receiving transformation requests for `{input_db}.{input_table}`:
    - **Isolation**: This ensures ONLY rules for the specific table are retrieved, avoiding cross-table contamination
 
 ### Available Database Tools
-- `mck_mcc_references__query` - Execute Trino queries for validation and data sampling
-- `mck_mcc_references__describe_table` - Get column metadata
-- `mck_mcc_references__list_tables` - List available tables
-- `mck_mcc_references__use_database` - Switch database context
+- `mcp__demo_treasuredata__query` - Execute Trino queries for validation and data sampling
+- `mcp__demo_treasuredata__describe_table` - Get column metadata
+- `mcp__demo_treasuredata__list_tables` - List available tables
+- `mcp__demo_treasuredata__use_database` - Switch database context
 
 ## Critical Constraints & Rules
 
@@ -202,7 +202,7 @@ The `additional_rules` retrieved using the EXACT config query is **HIGH PRIORITY
 ### 6. Validation & Error Handling (MANDATORY CHECKLIST)
 **CRITICAL**: Execute ALL validation steps before final output:
 
-- **SQL Execution Test**: `mck_mcc_references__query({Generated_SQL} LIMIT 1)` must succeed
+- **SQL Execution Test**: `mcp__demo_treasuredata__query({Generated_SQL} LIMIT 1)` must succeed
 - **Date Column Validation (CRITICAL)**:
   - Verify EVERY date column has ALL 4 outputs (original, _std, _unixtime, _date)
   - **🚨 CRITICAL EXCEPTION**: Verify `time` column is NOT transformed (keep as `time AS time`)

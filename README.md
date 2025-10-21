@@ -376,8 +376,8 @@ SELECT * FROM INDRESH_TEST.PUBLIC.td_id_master_table LIMIT 10;
 │ PHASE 3: STAGING TRANSFORMATION                                         │
 ├─────────────────────────────────────────────────────────────────────────┤
 │ Histunion Tables     → Staging Layer (TD)                               │
-│ client_src.*_histunion  → client_staging.klaviyo_events_staging             │
-│                      → client_staging.shopify_products_staging            │
+│ client_src.*_histunion  → client_stg.klaviyo_events             │
+│                      → client_stg.shopify_products            │
 │                                                                          │
 │ Transformations:                                                        │
 │ • Data cleansing (trim, case normalization)                            │
@@ -394,7 +394,7 @@ SELECT * FROM INDRESH_TEST.PUBLIC.td_id_master_table LIMIT 10;
 │ PHASE 4: IDENTITY UNIFICATION                                           │
 ├─────────────────────────────────────────────────────────────────────────┤
 │ Staging Tables       → Golden Records (TD)                              │
-│ All *_staging        → client_master.unified_customers                    │
+│ All *        → client_master.unified_customers                    │
 │                                                                          │
 │ Process:                                                                │
 │ 1. Extract identity keys (email, phone, user_id)                       │
@@ -474,8 +474,8 @@ SELECT * FROM INDRESH_TEST.PUBLIC.td_id_master_table LIMIT 10;
 ```
 
 **Input**: List of histunion tables
-**Output**: `staging/queries/{table}_staging.sql`, workflow files
-**Result**: Clean, standardized data in `client_staging.*` tables
+**Output**: `staging/queries/{table}.sql`, workflow files
+**Result**: Clean, standardized data in `client_stg.*` tables
 
 ---
 
@@ -614,8 +614,8 @@ The `cdp-hybrid-idu` plugin includes a powerful reporting feature that generates
 
 # 5. Unify customer identities
 /cdp-unification:unify-setup
-# Database: client_staging
-# Tables: shopify_customers_staging, klaviyo_profiles_staging
+# Database: client_stg
+# Tables: shopify_customers, klaviyo_profiles
 
 # Result: Golden customer records ready for analytics and activation
 ```

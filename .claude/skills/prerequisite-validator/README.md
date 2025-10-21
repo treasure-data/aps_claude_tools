@@ -173,7 +173,7 @@ User deploys with confidence
 - client_src.klaviyo_profiles_histunion: PASS (156 columns, 450K rows)
 
 ### ✅ Target Database
-- client_staging: PASS
+- client_stg: PASS
 
 ### ✅ Schema Validation
 - Required 'time' column: PASS

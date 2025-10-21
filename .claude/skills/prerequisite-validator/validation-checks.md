@@ -3,12 +3,268 @@
 This document provides detailed validation logic for the prerequisite-validator skill.
 
 ## Table of Contents
+0. [Client Name Validation](#client-name-validation) **← NEW CRITICAL CHECK**
 1. [Database Connectivity Checks](#database-connectivity-checks)
 2. [Table Existence Checks](#table-existence-checks)
 3. [Schema Validation Checks](#schema-validation-checks)
 4. [Credential Checks](#credential-checks)
 5. [Naming Convention Checks](#naming-convention-checks)
 6. [Data Quality Checks](#data-quality-checks)
+
+---
+
+## Client Name Validation
+
+### Check 0: Client Name & Database Validation
+
+**Purpose**: Ensure user provides REAL client name, not documentation examples like "client_src" or "demo_db"
+
+**Severity**: CRITICAL ❌ (blocks workflow creation)
+
+**When to Run**: ALWAYS FIRST, before any other validation
+
+**Detection Logic**:
+
+**Step 1: Parse Database Names from User Message**
+```python
+# Look for database patterns in user's message:
+patterns = [
+    r"(\w+)\.",                    # database.table format
+    r"from (\w+)",                 # from database
+    r"database:\s*(\w+)",          # database: name
+    r"source database:\s*(\w+)",   # source database: name
+    r"staging database:\s*(\w+)"   # staging database: name
+]
+
+# Extract all database names mentioned
+databases_mentioned = extract_all_matches(user_message, patterns)
+```
+
+**Step 2: Check Against Generic Name Blocklist**
+```python
+GENERIC_DATABASES = [
+    "client_src",
+    "client_stg",
+    "demo_db",
+    "demo_db_stg",
+    "test_db",
+    "sample_db",
+    "example_db"
+]
+
+for db in databases_mentioned:
+    if db in GENERIC_DATABASES:
+        return CRITICAL_ERROR(
+            f"Generic database name detected: {db}"
+        )
+```
+
+**Step 3: Extract Client Prefix**
+```python
+# From real database names, extract client:
+def extract_client_prefix(database_name):
+    """
+    acme_src → client = 'acme'
+    nike_stg → client = 'nike'
+    walmart_staging → client = 'walmart'
+    """
+    suffixes = ['_src', '_stg', '_staging', '_raw', '_unification']
+    for suffix in suffixes:
+        if database_name.endswith(suffix):
+            return database_name[:-len(suffix)]
+    return database_name  # No suffix found
+```
+
+**Step 4: Validate Client Name**
+```python
+def validate_client_name(client):
+    """Ensure client name is valid"""
+    if not client:
+        return False
+    if len(client) < 2 or len(client) > 30:
+        return False
+    if not re.match(r'^[a-zA-Z0-9_]+$', client):
+        return False
+    if client in GENERIC_DATABASES:
+        return False
+    return True
+```
+
+**Step 5: Verify Databases Exist**
+
+**MCP Tool**: `mcp__demo_treasuredata__list_databases`
+
+```python
+# Get all databases from TD
+all_databases = mcp__demo_treasuredata__list_databases()
+
+# Check expected databases
+client_src = f"{client}_src"
+client_stg = f"{client}_stg"
+
+results = {
+    "source_db": client_src in all_databases,
+    "staging_db": client_stg in all_databases,
+    "config_db": "config_db" in all_databases
+}
+```
+
+**Success Criteria**:
+- ✅ Client name provided (not generic)
+- ✅ Client name passes validation rules
+- ✅ Source database exists OR user confirms creation
+- ✅ Staging database exists OR user acknowledges it will be created
+
+**CRITICAL Failure Output**:
+```markdown
+❌ CRITICAL: Generic Database Name Detected
+
+You mentioned: "client_src"
+
+This is a documentation example name and CANNOT be used for production workflows.
+
+🔧 Action Required:
+Please provide your actual client name or project prefix.
+
+Examples:
+- Client: "acme" → Databases: acme_src, acme_stg
+- Client: "nike" → Databases: nike_src, nike_stg
+- Client: "retail_analytics" → Databases: retail_analytics_src, retail_analytics_stg
+
+**Question**: What is your client name or prefix?
+_________________________________________________
+
+Once provided, I'll verify these databases exist:
+- {client}_src (source data)
+- {client}_stg (staging/transformed data)
+- config_db (shared configuration)
+```
+
+**Success Output**:
+```markdown
+✅ Client Configuration Validated
+
+**Client Details:**
+- Client name: acme
+- Source database: acme_src ✅ (exists, 45 tables)
+- Staging database: acme_stg ✅ (exists, 23 tables)
+- Config database: config_db ✅ (shared, exists)
+
+**Ready to proceed** with workflow generation using these databases.
+```
+
+**Warning Output** (database doesn't exist):
+```markdown
+⚠️ Client Configuration - Database Creation Needed
+
+**Client Details:**
+- Client name: acme ✅ (validated)
+- Source database: acme_src ❌ (does not exist)
+- Staging database: acme_stg ❌ (does not exist)
+
+**Action Required:**
+Create these databases before running workflows:
+
+```sql
+-- Run in TD console or via API:
+CREATE DATABASE acme_src;
+CREATE DATABASE acme_stg;
+```
+
+**Proceed?** (Y/n): ___
+```
+
+**Alternative Flow** (User Doesn't Mention Any Database):
+```markdown
+ℹ️ Client Configuration Required
+
+Before generating workflows, please provide:
+
+**Option 1: Provide Client Name** (recommended)
+Client name/prefix: _______________
+
+This will build databases as:
+- Source: {client}_src
+- Staging: {client}_stg
+- Config: config_db (shared)
+
+**Option 2: Provide Custom Database Names**
+If you use different naming conventions:
+- Source database: _______________
+- Staging database: _______________
+- Config database: _______________
+```
+
+**Client Name Validation Rules**:
+```python
+def is_valid_client_name(name):
+    """
+    Valid: alphanumeric + underscores
+    Length: 2-30 characters
+    Not in generic blocklist
+    """
+    rules = {
+        "alphanumeric_only": re.match(r'^[a-zA-Z0-9_]+$', name),
+        "reasonable_length": 2 <= len(name) <= 30,
+        "not_generic": name not in GENERIC_DATABASES,
+        "not_empty": bool(name and name.strip())
+    }
+
+    failed_rules = [k for k, v in rules.items() if not v]
+    return len(failed_rules) == 0, failed_rules
+```
+
+**Edge Cases**:
+
+1. **User says "use client_src"**:
+   ```
+   ❌ BLOCK → Ask for real client name
+   ```
+
+2. **User provides table without database prefix**:
+   ```
+   ℹ️ Ask: "Which database is this table in? Or provide your client name."
+   ```
+
+3. **User has custom naming** (e.g., "acme_raw" instead of "acme_src"):
+   ```
+   ✅ ACCEPT → Use custom names as provided
+   Store: source_db = "acme_raw", staging_db = "acme_staging"
+   ```
+
+4. **Multiple databases mentioned**:
+   ```
+   Extract client from first database
+   Validate all mentioned databases exist
+   Report on each database separately
+   ```
+
+5. **User explicitly says "I'm testing with demo_db"**:
+   ```
+   ⚠️ WARN: "Demo/test databases won't persist to production.
+            Use real client names for production workflows."
+   Allow to proceed with warning
+   ```
+
+**Integration with Workflow Generation**:
+
+After successful validation:
+```python
+# Store for use in slash commands
+validated_config = {
+    "client_name": "acme",
+    "source_db": "acme_src",
+    "staging_db": "acme_stg",
+    "config_db": "config_db",
+    "databases_exist": True
+}
+
+# Pass to agents:
+# All generated files will use "acme_src", "acme_stg", etc.
+# No generic "client_src" in production files
+```
+
+**This check prevents the #1 deployment failure**: Using documentation example names in production workflows.
 
 ---
 
@@ -280,17 +536,17 @@ This is acceptable but may cause confusion in pipeline tracking
 
 **Purpose**: Verify staging tables follow naming convention
 
-**Pattern**: `{source}_{object}_staging`
+**Pattern**: `{source}_{object}`
 
-**Expected in**: Database names ending in `_staging` or containing `staging`
+**Expected in**: Database names ending in `` or containing `staging`
 
 **Warning Output**:
 ```
 ℹ️ Target table naming
 
 For staging tables, recommended pattern:
-- Table: {source}_{object}_staging
-- Database: {client}_staging
+- Table: {source}_{object}
+- Database: {client}_stg
 
 Current: {database}.{table}
 ```
@@ -308,7 +564,7 @@ Histunion layer:
 - {client}_histunion, {client}_hist
 
 Staging layer:
-- {client}_staging, {client}_stage
+- {client}, {client}_stage
 
 Unification layer:
 - {client}_unification, {client}_unified
@@ -449,7 +705,7 @@ Checks to run:
 4. ✅ Has identifier columns (email, profile_id)
 5. ℹ️ JSON columns detected (properties)
 6. ✅ Data freshness (updated 2 hours ago)
-7. ✅ Target database exists (client_staging)
+7. ✅ Target database exists (client_stg)
 8. ℹ️ Naming conventions OK
 
 Result: READY → Suggest /cdp-staging:transform-table

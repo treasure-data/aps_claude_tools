@@ -75,20 +75,20 @@ Transform a single table from histunion to staging format.
 
 **Prompts for:**
 - Source database and table (e.g., `client_src.klaviyo_events_histunion`)
-- Target database (e.g., `client_staging`)
+- Target database (e.g., `client_stg`)
 - SQL Engine (Presto or Hive)
 - Deduplication strategy
 - PII handling preferences
 
 **Generates:**
-- `staging/queries/{table}_staging.sql` - Transformation SQL
-- `staging/{table}_staging.dig` - Workflow file (optional)
+- `staging/queries/{table}.sql` - Transformation SQL
+- `staging/{table}.dig` - Workflow file (optional)
 
 **Example Output:**
 ```sql
--- File: staging/queries/klaviyo_events_staging.sql
+-- File: staging/queries/klaviyo_events.sql
 
-INSERT OVERWRITE TABLE client_staging.klaviyo_events_staging
+INSERT OVERWRITE TABLE client_stg.klaviyo_events
 SELECT
     -- ID fields
     TRIM(event_id) AS event_id,
@@ -113,7 +113,7 @@ FROM client_src.klaviyo_events_histunion
 
 WHERE time > (
     SELECT COALESCE(MAX(td_time), 0)
-    FROM client_staging.klaviyo_events_staging
+    FROM client_stg.klaviyo_events
 )
 
 -- Deduplication
@@ -163,20 +163,20 @@ client_src.shopify_products_histunion
 _parallel: true
 
 +transform_klaviyo_events:
-  td>: staging/queries/klaviyo_events_staging.sql
-  database: client_staging
+  td>: staging/queries/klaviyo_events.sql
+  database: client_stg
 
 +transform_klaviyo_profiles:
-  td>: staging/queries/klaviyo_profiles_staging.sql
-  database: client_staging
+  td>: staging/queries/klaviyo_profiles.sql
+  database: client_stg
 
 +transform_shopify_orders:
-  td>: staging/queries/shopify_orders_staging.sql
-  database: client_staging
+  td>: staging/queries/shopify_orders.sql
+  database: client_stg
 
 +transform_shopify_products:
-  td>: staging/queries/shopify_products_staging.sql
-  database: client_staging
+  td>: staging/queries/shopify_products.sql
+  database: client_stg
 ```
 
 ---
@@ -202,7 +202,7 @@ Validate generated staging SQL against CLAUDE.md compliance and quality gates.
 
 **Output:**
 ```
-Validating: staging/queries/klaviyo_events_staging.sql
+Validating: staging/queries/klaviyo_events.sql
 
 ✓ SQL syntax valid (Presto)
 ✓ Data cleansing (TRIM) applied
@@ -339,7 +339,7 @@ FROM customer_profiles
 ### Pattern 5: Incremental Load
 
 ```sql
-INSERT INTO client_staging.orders_staging
+INSERT INTO client_stg.orders
 SELECT
     order_id,
     customer_id,
@@ -352,7 +352,7 @@ FROM client_src.orders_histunion
 
 WHERE time > (
     SELECT COALESCE(MAX(td_time), 0)
-    FROM client_staging.orders_staging
+    FROM client_stg.orders
 )
 
 -- Deduplicate within this batch
@@ -490,13 +490,13 @@ FROM events
 
 **Input:**
 - Source: `client_src.klaviyo_events_histunion`
-- Target DB: `client_staging`
+- Target DB: `client_stg`
 - Engine: Presto
 - Dedup: By event_id, keep latest
 
 **Generated SQL:**
 ```sql
-INSERT INTO client_staging.klaviyo_events_staging
+INSERT INTO client_stg.klaviyo_events
 SELECT
     TRIM(event_id) AS event_id,
     TRIM(profile_id) AS profile_id,
@@ -519,7 +519,7 @@ FROM client_src.klaviyo_events_histunion
 
 WHERE time > (
     SELECT COALESCE(MAX(td_time), 0)
-    FROM client_staging.klaviyo_events_staging
+    FROM client_stg.klaviyo_events
 )
 
 QUALIFY ROW_NUMBER() OVER (
@@ -567,7 +567,7 @@ Engine: Presto
 
 **Generated Hive SQL:**
 ```sql
-INSERT OVERWRITE TABLE client_staging.web_logs_staging
+INSERT OVERWRITE TABLE client_stg.web_logs
 SELECT
     session_id,
     user_id,
@@ -638,13 +638,13 @@ WHERE row_num = 1
 ```
 staging/
 ├── queries/
-│   ├── klaviyo_events_staging.sql
-│   ├── klaviyo_profiles_staging.sql
-│   ├── shopify_orders_staging.sql
-│   └── shopify_products_staging.sql
+│   ├── klaviyo_events.sql
+│   ├── klaviyo_profiles.sql
+│   ├── shopify_orders.sql
+│   └── shopify_products.sql
 │
 ├── batch_staging_transform.dig
-├── klaviyo_events_staging.dig
+├── klaviyo_events.dig
 └── validation_report.txt
 ```
 
