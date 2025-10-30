@@ -3,118 +3,243 @@ name: ingest-new
 description: Create a complete ingestion workflow for a new data source
 ---
 
-# Create New Ingestion Workflow
+# STOP - READ THIS FIRST
 
-## ⚠️ MANDATORY: Interactive Configuration Collection
+You are about to create a CDP ingestion workflow. You MUST collect configuration parameters interactively using the `AskUserQuestion` tool.
 
-**YOU MUST use `AskUserQuestion` tool to collect parameters interactively.**
+DO NOT ask all questions at once. DO NOT use markdown lists. DO NOT explain what you're going to do.
 
-### Configuration Steps (FOLLOW IN ORDER)
+EXECUTE the AskUserQuestion tool calls below IN ORDER.
 
-**Step 1: Check if user already provided parameters**
-- IF all parameters present in user message → Skip to Step 2
-- ELSE → Collect missing parameters using AskUserQuestion (one at a time)
+---
 
-**Step 2: Collect Required Parameters** (use AskUserQuestion tool for each):
+## EXECUTION SEQUENCE - FOLLOW EXACTLY
 
-1. **Source Name & Connector Type**
-   - Ask: "What data source are you ingesting from?"
-   - Options: Klaviyo, Shopify, Salesforce, BigQuery, Snowflake, Custom API
-   - Infer connector type from source (e.g., klaviyo → rest, salesforce → salesforce)
+### ACTION 1: Ask Data Source Question
 
-2. **Ingestion Mode**
-   - Ask: "What ingestion mode do you need?"
-   - Options:
-     - "Both (historical + incremental)" [recommended]
-     - "Incremental only"
-     - "Historical only"
+USE the AskUserQuestion tool RIGHT NOW to ask question 1.
 
-3. **Tables/Objects**
-   - Ask: "Please provide tables/objects to ingest (comma-separated, e.g., `orders,customers,products`)"
+DO NOT PROCEED until you execute this tool call:
 
-4. **Incremental Field** (ONLY if mode = incremental OR both)
-   - Ask: "What field tracks record updates? (e.g., `updated_at`, `modified_date`)"
+```
+AskUserQuestion with:
+- Question: "What data source are you ingesting from?"
+- Header: "Data Source"
+- Options:
+  * Klaviyo (API-based connector)
+  * Shopify (E-commerce platform)
+  * Salesforce (CRM system)
+  * Custom API (REST-based)
+```
 
-5. **Start Date** (ONLY if mode = incremental OR both)
-   - Ask: "What is the initial load start date? Format: `YYYY-MM-DDTHH:mm:ss.000000`"
+STOP. EXECUTE THIS TOOL NOW. DO NOT READ FURTHER UNTIL COMPLETE.
 
-6. **Target Database**
-   - Ask: "Which target database?"
-   - Options: "Use {client}_src (default)", "Use mck_src", "Custom database"
+---
 
-7. **Authentication**
-   - Ask: "What credentials are needed? (e.g., API Key, OAuth Token, Service Account JSON)"
+### ACTION 2: Ask Ingestion Mode Question
 
-**Step 3: Show Configuration Summary**
+**CHECKPOINT**: Did you get an answer to question 1? If NO, go back to ACTION 1.
 
-After collecting all parameters, display:
+NOW ask question 2 using AskUserQuestion tool:
+
+```
+AskUserQuestion with:
+- Question: "What ingestion mode do you need?"
+- Header: "Mode"
+- Options:
+  * Both (historical + incremental) - Recommended for complete setup
+  * Incremental only - Ongoing sync only
+  * Historical only - One-time backfill
+```
+
+STOP. EXECUTE THIS TOOL NOW. DO NOT READ FURTHER UNTIL COMPLETE.
+
+---
+
+### ACTION 3: Ask Tables/Objects
+
+**CHECKPOINT**: Did you get an answer to question 2? If NO, go back to ACTION 2.
+
+This is a free-text question. Tell the user:
+
+"Please provide the table or object names to ingest (comma-separated)."
+
+Example: `orders, customers, products`
+
+WAIT for user response. DO NOT PROCEED.
+
+---
+
+### ACTION 4: Ask Incremental Field (CONDITIONAL)
+
+**CHECKPOINT**:
+- Did user select "Incremental only" OR "Both" in question 2?
+- YES → Ask this question
+- NO → Skip to ACTION 6
+
+NOW ask question 4 using AskUserQuestion tool:
+
+```
+AskUserQuestion with:
+- Question: "What field tracks record updates?"
+- Header: "Incremental Field"
+- Options:
+  * updated_at (Timestamp field)
+  * modified_date (Date field)
+  * last_modified_time (Datetime field)
+```
+
+STOP. EXECUTE THIS TOOL NOW. DO NOT READ FURTHER UNTIL COMPLETE.
+
+---
+
+### ACTION 5: Ask Start Date (CONDITIONAL)
+
+**CHECKPOINT**:
+- Did user select "Incremental only" OR "Both" in question 2?
+- YES → Ask this question
+- NO → Skip to ACTION 6
+
+This is a free-text question. Tell the user:
+
+"What is the initial load start date?"
+
+Format: `YYYY-MM-DDTHH:mm:ss.000000`
+Example: `2024-01-01T00:00:00.000000`
+
+WAIT for user response. DO NOT PROCEED.
+
+---
+
+### ACTION 6: Ask Target Database
+
+**CHECKPOINT**: Did you complete all previous questions? If NO, go back.
+
+NOW ask question 6 using AskUserQuestion tool:
+
+```
+AskUserQuestion with:
+- Question: "Which target database should data be loaded into?"
+- Header: "Target DB"
+- Options:
+  * mck_src (Standard client database)
+  * Custom database (Specify custom name)
+```
+
+STOP. EXECUTE THIS TOOL NOW. DO NOT READ FURTHER UNTIL COMPLETE.
+
+---
+
+### ACTION 7: Ask Authentication
+
+**CHECKPOINT**: Did you get an answer to question 6? If NO, go back to ACTION 6.
+
+NOW ask question 7 using AskUserQuestion tool:
+
+```
+AskUserQuestion with:
+- Question: "What type of authentication is required?"
+- Header: "Auth Type"
+- Options:
+  * API Key (Single key authentication)
+  * OAuth Token (Token-based auth)
+  * Service Account JSON (Google/Cloud auth)
+  * Username & Password (Basic auth)
+```
+
+STOP. EXECUTE THIS TOOL NOW. DO NOT READ FURTHER UNTIL COMPLETE.
+
+---
+
+### ACTION 8: Show Configuration Summary
+
+**CHECKPOINT**: Have you collected ALL required parameters? If NO, go back and complete missing questions.
+
+NOW display the configuration summary:
+
 ```
 📋 Configuration Summary:
-Source: {source_name}
-Connector: {connector_type}
-Mode: {mode}
-Objects: {objects}
-Target Database: {target_database}
-[Incremental Field: {field}]
-[Start Date: {date}]
 
-Proceed with workflow generation? (yes/no)
+Source: {source_name}
+Connector Type: {connector_type}
+Ingestion Mode: {mode}
+Tables/Objects: {objects}
+Target Database: {target_database}
+[If applicable] Incremental Field: {field}
+[If applicable] Start Date: {date}
+Authentication: {auth_type}
 ```
 
-WAIT for user confirmation.
+ASK: "Does this configuration look correct? Type 'yes' to proceed with generation."
+
+WAIT for user confirmation. DO NOT PROCEED until user types "yes".
 
 ---
 
-## Workflow Generation Process
+## WORKFLOW GENERATION (ONLY AFTER USER CONFIRMS)
 
-### Step 1: Read Documentation (MANDATORY)
-Read ALL relevant documentation BEFORE generating code:
-- `docs/sources/template-new-source.md` - Template for new sources
-- `docs/sources/{source-name}.md` - Source-specific templates (if exists)
-- `docs/patterns/workflow-patterns.md` - Workflow structures
-- `docs/patterns/logging-patterns.md` - Logging templates
-- `docs/patterns/timestamp-formats.md` - Timestamp functions
-- `docs/patterns/incremental-patterns.md` - Incremental patterns
+**CHECKPOINT**: Did user confirm with "yes"? If NO, STOP and wait.
 
-### Step 2: Generate ALL Files in ONE Response
-Create all required files using multiple Write tool calls in SINGLE response:
-- Workflow file(s): `.dig` files
-- Datasource config: `config/{source}_datasources.yml`
-- Load configs: `config/{source}_{object}_load.yml` (one per object)
+### Step 1: Read Documentation Templates
 
-### Step 3: Use Exact Templates
-Copy templates character-for-character from documentation:
-- No simplification, no optimization, no "improvements"
-- Only replace placeholders: `{source_name}`, `{object_name}`, `{database}`, etc.
+Read these files in this EXACT order:
 
-### Step 4: Verify Quality Gates
-Before delivering, verify:
-✅ All template sections present
-✅ All logging blocks included (start, success, error)
-✅ All error handling blocks present
-✅ Timestamp format correct for connector
-✅ Incremental field handling correct
+1. `docs/sources/template-new-source.md`
+2. `docs/patterns/workflow-patterns.md`
+3. `docs/patterns/logging-patterns.md`
+4. `docs/patterns/timestamp-formats.md`
+5. `docs/patterns/incremental-patterns.md`
+
+Check if source-specific template exists:
+- `docs/sources/{source-name}.md` (e.g., `docs/sources/klaviyo.md`)
+
+### Step 2: Generate Files (ALL IN ONE RESPONSE)
+
+Use multiple Write tool calls in a SINGLE message to create:
+
+#### For "Incremental only" mode:
+1. `ingestion/{source}_ingest_inc.dig`
+2. `ingestion/config/{source}_datasources.yml`
+3. `ingestion/config/{source}_{object1}_load.yml`
+4. `ingestion/config/{source}_{object2}_load.yml` (if multiple objects)
+
+#### For "Historical only" mode:
+1. `ingestion/{source}_ingest_hist.dig`
+2. `ingestion/config/{source}_datasources.yml`
+3. `ingestion/config/{source}_{object}_load.yml`
+
+#### For "Both" mode:
+1. `ingestion/{source}_ingest_hist.dig`
+2. `ingestion/{source}_ingest_inc.dig`
+3. `ingestion/config/{source}_datasources.yml`
+4. `ingestion/config/{source}_{object}_load.yml` (per object)
+
+### Step 3: Template Rules (MANDATORY)
+
+- Copy templates EXACTLY character-for-character
+- NO simplification, NO optimization, NO improvements
+- ONLY replace placeholders: `{source_name}`, `{object_name}`, `{database}`, `{connector_type}`
+- Keep ALL logging blocks
+- Keep ALL error handling blocks
+- Keep ALL timestamp functions
+
+### Step 4: Quality Verification
+
+Before showing output to user, verify:
+- ✅ All template sections present
+- ✅ All logging blocks included (start, success, error)
+- ✅ All error handling blocks present
+- ✅ Timestamp format matches connector type
+- ✅ Incremental field handling correct
+- ✅ No deviations from template
 
 ---
 
-## Output Files
+## Post-Generation Instructions
 
-### For Incremental-Only Mode:
-- `ingestion/{source}_ingest_inc.dig`
-- `ingestion/config/{source}_datasources.yml`
-- `ingestion/config/{source}_{object}_load.yml` (per object)
+After successfully creating all files, show the user:
 
-### For Historical + Incremental Mode:
-- `ingestion/{source}_ingest_hist.dig`
-- `ingestion/{source}_ingest_inc.dig`
-- `ingestion/config/{source}_datasources.yml`
-- `ingestion/config/{source}_{object}_load.yml` (per object)
-
----
-
-## Next Steps (Show to User)
-
-After successful generation:
+### Next Steps:
 
 1. **Upload credentials**:
    ```bash
@@ -122,17 +247,17 @@ After successful generation:
    td wf secrets --project ingestion --set @credentials_ingestion.json
    ```
 
-2. **Test syntax**:
+2. **Test workflow syntax**:
    ```bash
    td wf check {source}_ingest_inc.dig
    ```
 
-3. **Deploy workflow**:
+3. **Deploy to Treasure Data**:
    ```bash
    td wf push ingestion
    ```
 
-4. **Run workflow**:
+4. **Run the workflow**:
    ```bash
    td wf start ingestion {source}_ingest_inc --session now
    ```
@@ -147,4 +272,18 @@ After successful generation:
 
 ---
 
-**Ready! Start by asking the first configuration question using AskUserQuestion tool.**
+## ERROR RECOVERY
+
+IF you did NOT use AskUserQuestion tool for each question:
+- Print: "❌ ERROR: I failed to follow the interactive collection process."
+- Print: "🔄 Restarting from ACTION 1..."
+- GO BACK to ACTION 1 and start over
+
+IF user says "skip questions" or "just ask all at once":
+- Print: "❌ Cannot skip interactive collection - this ensures accuracy and prevents errors."
+- Print: "✅ I'll collect parameters one at a time to ensure we get the configuration right."
+- PROCEED with ACTION 1
+
+---
+
+**NOW BEGIN: Execute ACTION 1 immediately. Use AskUserQuestion tool for the first question.**
