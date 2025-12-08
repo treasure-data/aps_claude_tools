@@ -11,28 +11,78 @@ I'll help you transform a database table to staging format using the appropriate
 
 ---
 
-## Required Information
+## Gathering Required Information
 
-Please provide the following details:
+**FIRST, use the AskUserQuestion tool to interactively collect all required parameters.**
 
-### 1. Source Table
-- **Database Name**: Source database (e.g., `client_src`, `demo_db`)
-- **Table Name**: Source table name (e.g., `customer_profiles_histunion`)
+Call AskUserQuestion with these questions:
 
-### 2. Target Configuration
-- **Staging Database**: Target database (default: `client_stg`)
-- **Lookup Database**: Reference database for rules (default: `client_config`)
+```json
+{
+  "questions": [
+    {
+      "question": "Which table do you want to transform? (Format: database.table_name, e.g., client_src.customers_histunion)",
+      "header": "Source Table",
+      "multiSelect": false,
+      "options": [
+        {
+          "label": "client_src.*",
+          "description": "Table from client_src database - I'll specify the table name"
+        },
+        {
+          "label": "demo_db.*",
+          "description": "Table from demo_db database - I'll specify the table name"
+        }
+      ]
+    },
+    {
+      "question": "Which SQL engine should be used for the transformation?",
+      "header": "SQL Engine",
+      "multiSelect": false,
+      "options": [
+        {
+          "label": "Presto/Trino",
+          "description": "Modern SQL engine with better performance (recommended, default)"
+        },
+        {
+          "label": "Hive",
+          "description": "MapReduce-based engine for batch processing or large datasets"
+        }
+      ]
+    },
+    {
+      "question": "Staging database name? (Default: client_stg)",
+      "header": "Staging DB",
+      "multiSelect": false,
+      "options": [
+        {
+          "label": "client_stg",
+          "description": "Use default staging database (recommended)"
+        }
+      ]
+    },
+    {
+      "question": "Config/Lookup database name? (Default: client_config)",
+      "header": "Config DB",
+      "multiSelect": false,
+      "options": [
+        {
+          "label": "client_config",
+          "description": "Use default config database (recommended)"
+        }
+      ]
+    }
+  ]
+}
+```
 
-### 3. SQL Engine (Optional)
-- **Engine**: Choose one:
-  - `presto` or `trino` - Presto/Trino SQL engine (default)
-  - `hive` - Hive SQL engine
-  - If not specified, will default to Presto/Trino
+After collecting answers:
+- Q1: Parse answer to extract source_database and table_name (e.g., "client_src.customers" → source_db="client_src", table="customers"). If "Other" used, parse the full input.
+- Q2: Map to engine="presto" or engine="hive"
+- Q3: Extract staging_database (use "Other" input if custom, else use selected option)
+- Q4: Extract lookup_database (use "Other" input if custom, else use selected option)
 
-### 4. Transformation Requirements (Optional)
-- **Deduplication**: Required? (will check client_config.staging_trnsfrm_rules)
-- **JSON Columns**: Will auto-detect and process
-- **Join Logic**: Any joins needed? (will check additional_rules)
+Then delegate to appropriate staging-transformer agent with all parameters.
 
 ---
 

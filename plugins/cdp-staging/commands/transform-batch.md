@@ -11,32 +11,90 @@ I'll help you transform multiple database tables to staging format using paralle
 
 ---
 
-## Required Information
+## Gathering Required Information
 
-Please provide the following details:
+**FIRST, use the AskUserQuestion tool to interactively collect all required parameters.**
 
-### 1. Source Tables
-- **Table List**: Comma-separated list of tables (e.g., `table1, table2, table3`)
-- **Format**: `database.table_name` or just `table_name` (if same database)
-- **Example**: `client_src.customers_histunion, client_src.orders_histunion, client_src.products_histunion`
+Call AskUserQuestion with these questions:
 
-### 2. Source Configuration
-- **Source Database**: Database containing tables (e.g., `client_src`)
-- **Staging Database**: Target database (default: `client_stg`)
-- **Lookup Database**: Reference database for rules (default: `client_config`)
-
-### 3. SQL Engine (Optional)
-- **Engine**: Choose one:
-  - `presto` or `trino` - Presto/Trino SQL engine (default)
-  - `hive` - Hive SQL engine
-  - `mixed` - Specify engine per table
-  - If not specified, will default to Presto/Trino for all tables
-
-### 4. Mixed Engine Example (Optional)
-If you need different engines for different tables:
+```json
+{
+  "questions": [
+    {
+      "question": "Which tables do you want to transform? (Comma-separated, e.g., table1, table2 OR db.table1, db.table2)",
+      "header": "Tables",
+      "multiSelect": false,
+      "options": [
+        {
+          "label": "Table list",
+          "description": "I'll provide comma-separated table names"
+        }
+      ]
+    },
+    {
+      "question": "Which SQL engine strategy should be used for these tables?",
+      "header": "SQL Engine",
+      "multiSelect": false,
+      "options": [
+        {
+          "label": "Presto/Trino",
+          "description": "Use Presto/Trino for all tables (recommended, default, fastest)"
+        },
+        {
+          "label": "Hive",
+          "description": "Use Hive for all tables (batch processing, large datasets)"
+        }
+      ]
+    },
+    {
+      "question": "What is the source database containing these tables?",
+      "header": "Source DB",
+      "multiSelect": false,
+      "options": [
+        {
+          "label": "client_src",
+          "description": "Standard client source database"
+        },
+        {
+          "label": "demo_db",
+          "description": "Demo/sample database"
+        }
+      ]
+    },
+    {
+      "question": "Staging database name? (Default: client_stg)",
+      "header": "Staging DB",
+      "multiSelect": false,
+      "options": [
+        {
+          "label": "client_stg",
+          "description": "Use default staging database (recommended)"
+        }
+      ]
+    },
+    {
+      "question": "Config/Lookup database name? (Default: client_config)",
+      "header": "Config DB",
+      "multiSelect": false,
+      "options": [
+        {
+          "label": "client_config",
+          "description": "Use default config database (recommended)"
+        }
+      ]
+    }
+  ]
+}
 ```
-Transform table1 using Hive, table2 using Presto, table3 using Hive
-```
+
+After collecting answers:
+- Q1: Parse answer to extract table_list. If "Other" contains comma-separated tables, use that.
+- Q2: Map to engine="presto" or engine="hive" for all tables
+- Q3: Extract source_database (use "Other" input if custom, else use selected option)
+- Q4: Extract staging_database (use "Other" input if custom, else default "client_stg")
+- Q5: Extract lookup_database (use "Other" input if custom, else default "client_config")
+
+Then launch parallel sub-agents (one per table) with appropriate staging-transformer agent and all parameters.
 
 ---
 
