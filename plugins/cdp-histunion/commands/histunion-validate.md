@@ -9,6 +9,39 @@ description: Validate hist-union workflow and SQL files against production quali
 
 I'll help you validate your hist-union workflow files to ensure they meet production standards.
 
+First, let me gather information about what you'd like to validate:
+
+<question_tool>
+Use the AskUserQuestion tool to gather:
+1. Validation scope - what files to validate
+2. Validation mode - syntax only or full schema validation
+
+Questions to ask:
+- Question 1: "What would you like to validate?"
+  - header: "Scope"
+  - multiSelect: false
+  - options:
+    - label: "All hist-union files"
+      description: "Validate the workflow file and all SQL files in queries/ directory"
+    - label: "Workflow file only"
+      description: "Validate only hist_union_runner.dig"
+    - label: "Specific SQL file"
+      description: "I'll ask for the specific file name to validate"
+
+- Question 2: "What validation mode do you want?"
+  - header: "Mode"
+  - multiSelect: false
+  - options:
+    - label: "Syntax validation (fast)"
+      description: "Quick check of file structure and SQL syntax without database access (~10 seconds)"
+    - label: "Full schema validation"
+      description: "Complete validation including schema matching against actual TD tables via MCP (~30-60 seconds)"
+</question_tool>
+
+After gathering this information:
+- If user selected "Specific SQL file" in Question 1, I will ask them to provide the SQL file name (e.g., "klaviyo_events.sql")
+- I will proceed with validation based on the selected scope and mode
+
 ---
 
 ## What Gets Validated

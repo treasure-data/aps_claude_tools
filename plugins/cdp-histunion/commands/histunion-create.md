@@ -9,21 +9,41 @@ description: Create hist-union workflow for combining historical and incremental
 
 I'll help you create a production-ready hist-union workflow to combine historical and incremental table data.
 
----
+First, let me gather the required information using a quick questionnaire:
 
-## Required Information
+<question_tool>
+Use the AskUserQuestion tool to gather:
+1. Table name(s) - with option for single table or multiple tables
+2. Lookup database - with default option of client_config
 
-Please provide the following details:
+Questions to ask:
+- Question 1: "What table(s) do you want to create hist-union for?"
+  - header: "Table Names"
+  - multiSelect: false
+  - options:
+    - label: "Single table"
+      description: "I'll help you provide the table name in the next step"
+    - label: "Multiple tables"
+      description: "Use the batch command instead for better performance"
 
-### 1. Table Names
-You can provide table names in any of these formats:
+- Question 2: "What is your lookup/config database for the inc_log watermark table?"
+  - header: "Lookup DB"
+  - multiSelect: false
+  - options:
+    - label: "client_config (default)"
+      description: "Standard config database for most projects"
+    - label: "Custom database"
+      description: "I'll ask for the custom database name"
+</question_tool>
+
+After gathering this information, if the user selected "Multiple tables" in Question 1, I will inform them that the /cdp-histunion:histunion-batch command is better suited for processing multiple tables efficiently, and ask if they want to proceed with that command instead.
+
+If user selected "Custom database" in Question 2, I will ask them to provide the custom database name.
+
+Once I have the table name, I will ask the user to provide it in any of these formats:
 - **Base name**: `client_src.klaviyo_events` (I'll derive hist and histunion names)
 - **Hist name**: `client_src.klaviyo_events_hist` (I'll derive inc and histunion names)
 - **Explicit**: Inc: `client_src.klaviyo_events`, Hist: `client_src.klaviyo_events_hist`
-
-### 2. Lookup Database (Optional)
-- **Lookup/Config Database**: Database for inc_log watermark table
-- **Default**: `client_config` (will be used if not specified)
 
 ---
 

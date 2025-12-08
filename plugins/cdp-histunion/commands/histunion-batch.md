@@ -9,19 +9,43 @@ description: Create hist-union workflows for multiple tables in batch with paral
 
 I'll help you create hist-union workflows for multiple tables at once, with proper schema validation for each table.
 
----
+First, let me gather the required information using a quick questionnaire:
 
-## Required Information
+<question_tool>
+Use the AskUserQuestion tool to gather:
+1. Table input method preference
+2. Lookup database - with default option of client_config
 
-### 1. Table List
-Provide table names in any format (comma-separated or one per line):
+Questions to ask:
+- Question 1: "How would you like to provide the list of tables?"
+  - header: "Input Method"
+  - multiSelect: false
+  - options:
+    - label: "Paste table list now"
+      description: "I'll ask you to provide the comma-separated or line-separated table list in the next step"
+    - label: "Provide tables one by one"
+      description: "I'll guide you through entering each table name"
 
-**Option A - Base names:**
+- Question 2: "What is your lookup/config database for the inc_log watermark table?"
+  - header: "Lookup DB"
+  - multiSelect: false
+  - options:
+    - label: "client_config (default)"
+      description: "Standard config database for most projects"
+    - label: "Custom database"
+      description: "I'll ask for the custom database name"
+</question_tool>
+
+After gathering this information:
+- If user selected "Custom database" in Question 2, I will ask them to provide the custom database name.
+- If user selected "Paste table list now", I will ask them to provide the table names in any of these formats:
+
+**Option A - Base names (comma-separated):**
 ```
 client_src.klaviyo_events, client_src.shopify_products, client_src.onetrust_profiles
 ```
 
-**Option B - Hist names:**
+**Option B - Hist names (one per line):**
 ```
 client_src.klaviyo_events_hist
 client_src.shopify_products_hist
@@ -39,10 +63,6 @@ client_src.klaviyo_events, client_src.shopify_products_hist, client_src.onetrust
 - client_src.shopify_products
 - client_src.onetrust_profiles
 ```
-
-### 2. Lookup Database (Optional)
-- **Lookup/Config Database**: Database for inc_log watermark table
-- **Default**: `client_config` (will be used if not specified)
 
 ---
 
