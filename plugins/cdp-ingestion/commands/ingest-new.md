@@ -88,6 +88,9 @@ Create all required files using multiple Write tool calls in SINGLE response:
 - Workflow file(s): `.dig` files
 - Datasource config: `config/{source}_datasources.yml`
 - Load configs: `config/{source}_{object}_load.yml` (one per object)
+- Hist Date Range: `config/hist_date_ranges.yml`
+- database config: `config/database.yml`
+- Logging Sql Files: `sql/log_ingestion_*.sql`
 
 ### Step 3: Use Exact Templates (COPY, DO NOT CREATE)
 Copy templates character-for-character from the files you read in Step 1:

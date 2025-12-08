@@ -420,9 +420,11 @@ What type of source are you adding?
 Before considering the source "complete":
 
 ### Files Created
+- [ ] `config/database.yml`
 - [ ] `config/[source]_datasources.yml`
 - [ ] `[source]_ingest_inc.dig` (and `_hist.dig` if needed)
 - [ ] `config/[source]_[object]_load.yml` (for each object)
+- [ ] `sql/log_ingestion_.*.yml` (sql logging files)
 - [ ] `docs/sources/[source-name].md`
 - [ ] Updated `credentials_ingestion.json` (not committed!)
 
