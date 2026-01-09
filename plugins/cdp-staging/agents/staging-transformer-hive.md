@@ -293,7 +293,7 @@ SPLIT(REGEXP_REPLACE(REGEXP_EXTRACT(properties, '"\\$consent":\\[([^\\]]*)', 1),
 ### Column Type Standards
 
 #### String Columns - Transform In Place (Hive Compatible)
-- **Standardization**: `CASE WHEN TRIM(UPPER(column_name)) IN ('', 'NONE', 'NULL', 'N/A') THEN NULL ELSE TRIM(UPPER(column_name)) END AS column_name`
+- **Standardization**: `CASE WHEN TRIM(UPPER(column_name)) IN ('', 'NONE', 'NULL', 'N/A', 'NA') THEN NULL ELSE TRIM(UPPER(column_name)) END AS column_name`
 
 #### Email Columns - Create Multiple Versions (Hive Compatible)
 - **Pattern Recognition**: Columns with 'email' in name
@@ -440,8 +440,8 @@ get_json_object({json_column}, '$.array_field') AS {json_column}_{array_field}
 WITH cleaned_data AS (
   SELECT
     -- Apply ALL transformations here (Hive compatible)
-    CASE WHEN TRIM(UPPER(customer_id)) IN ('', 'NONE', 'NULL', 'N/A') THEN NULL ELSE TRIM(UPPER(customer_id)) END AS customer_id,
-    CASE WHEN TRIM(LOWER(email)) IN ('', 'NONE', 'NULL', 'N/A') THEN NULL ELSE TRIM(LOWER(email)) END AS email,
+    CASE WHEN TRIM(UPPER(customer_id)) IN ('', 'NONE', 'NULL', 'N/A', 'NA') THEN NULL ELSE TRIM(UPPER(customer_id)) END AS customer_id,
+    CASE WHEN TRIM(LOWER(email)) IN ('', 'NONE', 'NULL', 'N/A', 'NA') THEN NULL ELSE TRIM(LOWER(email)) END AS email,
     CASE WHEN regexp_extract(TRIM(LOWER(email)), '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$', 0) != ''
          THEN TRIM(LOWER(email)) ELSE NULL END AS email_std,
     -- More transformations...

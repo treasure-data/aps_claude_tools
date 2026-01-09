@@ -237,7 +237,7 @@ The `additional_rules` retrieved using the EXACT config query is **HIGH PRIORITY
 ### Column Type Standards
 
 #### String Columns - Transform In Place
-- **Standardization**: `NULLIF(NULLIF(NULLIF(NULLIF(TRIM(UPPER(column_name)), '')), 'NONE'), 'NULL'), 'N/A') AS column_name`
+- **Standardization**: `NULLIF(NULLIF(NULLIF(NULLIF(NULLIF(TRIM(UPPER(column_name)), '')), 'NONE'), 'NULL'), 'N/A') , 'N/A') AS column_name`
 
 #### Email Columns - Create Multiple Versions
 - **Pattern Recognition**: Columns with 'email' in name
